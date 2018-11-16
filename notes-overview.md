@@ -55,10 +55,52 @@ Database services in the cloud, and we have the following:
 2) CodeCommit - AWS hosted source control, essentially a private git repository.
 3) CodeBuild - Build service.
 4) CodeDeploy - Push deployment to EC2 or Lambda.
-5) CodePipeline - CI/CD pipeline to wire up the rest of teh deve-tools services.
+5) CodePipeline - CI/CD pipeline to wire up the rest of the dev-tools services.
 6) X-Ray - Debug and analyze serverless apps. Request tracing.
 7) Cloud9 - IDE on the cloud via the brwoser.
 
-### C
+### Management Tools
+These are what we use to monitor and manage our cloud services
+1) CloudWatch - Part of the sys-ops tool kit.
+2) CloudFormation - Infrastructure as Code serive for AWS, generally via script templates.
+3) CloudTrail - Logs changes to your AWS instances. By default it is turned on and stores data only for one week. Very helpful for investigation and analysis.
+4) Config - Keeps a record of your AWS configuration as snapshots.
+5) OpsWork - Uses Chef & Puppet to configure the environment.
+6) Service Catalog - Catalog of approved services, used mainly for compliance and governance.
+7) Systems Manager - Used for managing EC2 instance, patching etc.
+8) Trusted Advisor - Advise around various services, like security, utlization etc.
+9) Managed Services - AWS managed services can provide managed services to manage your subscriptions.
+
+### Media Services
+These are brand new as of 2017
+1) Elastic Transcode - 
+2) MediaConvert - File based video transcoder.
+3) MediaLive - File based video feed for broadcast.
+4) MediaPackage -
+5) MediaStore - Service optimized to store media.
+6) MediaTailor - 
+
+### Machine Learning
+1) SageMaker - Deep learning service. More neural-network based.
+2) Comprehend - Sentiment analysis.
+3) DeepLens - AI aware camera, that is self contained and does not need to connect out to service.
+4) Lex - NLP service used for chat and Alexa.
+5) Machine Learning - More basic ML algorithms. Used by Amazon for its recommendations engine.
+6) Polly - Text to speech convertor. We shall use this to convert our notes to MP3 files, and stream them.
+7) Rekognition - Image recognition from images and videos!
+8) Amazon Translate - Amazon's version of Google Translate.
+9) Transcribe - Speech recognition and turn that into text. A good combination with Polly & Translate.
+
+### Analytics
+1) Athena - Run SQL queris against data in S3 buckets (like spreadsheet), it is serverless.
+2) EMR (Elastic Map Reduce) - Big-Data solution as a service.
+3) CloudSearch - 
+4) EalsticSearch Service - Search services.
+5) Kinesis - Stream processing service.
+6) Kinesis Video Stream - More a media service. Ingest media streaming service.
+7) QuickSight - AWS BI tool.
+8) Data Pipeline - 
+9) AWS Glue - ETL service.
+
 
 
