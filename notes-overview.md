@@ -102,5 +102,19 @@ These are brand new as of 2017
 8) Data Pipeline - 
 9) AWS Glue - ETL service.
 
+### Security, Identity & Compliance
+1) IAM (Identity Access Management) - Identity provider, management & authentication.
+2) Cognito - Device authentication (temperory), after primary auth over IAM.
+3) GuardDuty - Monitors for malicious activity on AWS account
+4) Inspector - Agent on EC2 instance, to inspect for security vulnerabilities.
+5) Macie - Scans S3 bucktes for PII.
+6) Certificate Manager -  Manage SSL certificates for AWS instances. Can be CA.
+7) CloudHSM - Hardware Security Module - dedicated h/w to store encrypted keys.
+8) Directory Services - Integrating MS Active Directory services with AWS.
+9) WAF (Web Application Firewall) - Like Layer7 FW - application level vulnerability protection - XSS, SQL-Injection etc.
+10) Shield - It stops DDOS attacks. By default for many services like CLoudFront, LB etc.
+11) Artifact - Download reference documentation on governance.
 
+### Mobile Services
+1) Mobile Hub - 
 
