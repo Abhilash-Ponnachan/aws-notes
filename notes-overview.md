@@ -116,5 +116,43 @@ These are brand new as of 2017
 11) Artifact - Download reference documentation on governance.
 
 ### Mobile Services
-1) Mobile Hub - 
+1) Mobile Hub - Management console for configuring mobile apps to mobile backend.
+2) Pinpoint - Tragetted push notifications.
+3) AppSync - Auto update of data between mobile and online.
+4) DeviceFarm - Testing mobile apps on test devices.
+5) Mobile Analytics - 
+
+### AR & VR
+1) Sumerian - AR, VR & 3D application design - still in preview.
+
+### Application Integrations
+1) Step Functions - Integrate Lambda functions
+2) Amazon MQ - Similar to RabbitMQ, cloud MQ services.
+3) SNS (Simple Notification Service) - Notification service.
+4) SQS (Simple Queue Service) - Resilient queue service for decoupling.
+5) SWF (Simple Workflow Service) - Workflow managing and orchestration service.
+
+### Customer Engagement
+1) Connect - Contact center as a service!
+2) SES (Simple Email Service) - Scalable email sending sevice.
+
+### Business Productivity
+1) Alex for Business - Alexa used for IT support like use cases.
+2) Chime - Video conferencing service.
+3) Work Docs - Secure document storage, like Dropbox.
+4) WorkMail - Amazon flavour of O365, use work email for AWS.
+
+### Desktop & App Streaming
+1) Workspaces - VDI service within AWS and streaming down to our device.
+2) AppStream 2.0 -  Application running on AWS instance then streamed down to device (similar to Citrix).
+
+### IoT
+1) ioT - Suite of services for IoT
+2) iOt Device Mangement - 
+3) Amazon Free RTOS - Free OS for micro controllers
+4) Greengrass -
+
+### Game Development
+1) GameLift - Game development for AWS cloud.
+
 
