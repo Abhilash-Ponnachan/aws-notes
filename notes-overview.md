@@ -155,4 +155,9 @@ These are brand new as of 2017
 ### Game Development
 1) GameLift - Game development for AWS cloud.
 
+## Services for SA Associate exam ##
+The services that come in the scope of the AWS Solutions Architect - Associte exam are -  
+![SA-Associate-scope](AWS-SA-associate-services.png)  
+Again not all services in all these are equally important. The SA associate exam is quite broad in scope.
+
 
