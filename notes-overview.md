@@ -61,7 +61,7 @@ Database services in the cloud, and we have the following:
 
 ### Management Tools
 These are what we use to monitor and manage our cloud services
-1) CloudWatch - Part of the sys-ops tool kit.
+1) CloudWatch - Tracks metrics and performance related events. Part of the sys-ops tool kit.
 2) CloudFormation - Infrastructure as Code serive for AWS, generally via script templates.
 3) CloudTrail - Logs changes to your AWS instances. By default it is turned on and stores data only for one week. Very helpful for investigation and analysis.
 4) Config - Keeps a record of your AWS configuration as snapshots.
@@ -160,4 +160,50 @@ The services that come in the scope of the AWS Solutions Architect - Associte ex
 ![SA-Associate-scope](AWS-SA-associate-services.png)  
 Again not all services in all these are equally important. The SA associate exam is quite broad in scope.
 
+## IAM (Identity Acess Management)
 
+### IAM 101
+Setting up users and managing their access to the AWS services.  
+AWS IAM provides the following capabilities -
+ - Centralised control of our AWS account
+ - Shared access to our AWS account
+ - Granular permissions
+ - Identity federation (AD, FB, LinkedIn etc.)
+ - Multifactor authentication (MFA)
+ - Temperory access for users/devices & services
+ - Setup password rotation policies
+ - Integrates with many other AWS services
+ - Supports PCI DSS complaince
+
+#### Terms & Concepts
+ - User - An end user of the service
+ - Group - A collection of users under one set of permissions
+ - Role - An identity with a set of permission policies that determine what actions it can perform on what resource
+    - We can use roles to delegate access to users, applications or services to our AWS resources
+ - Policies - A document that defines one or more permissions
+    - We can attach a policy document to users, groups or roles
+    - A policy can be shared by multiple identities (users or roles or groups)  
+    An attempt to describe the concepts and relationships visualy -![AWS-IAM-RBAC](AWS-IAM-RBAC.png)
+
+#### IAM Lab
+Once we login to the AWS console, we can find IAM service under the category __Security, Identity & Compliance__.  
+__Note__ that unlike most other services, IAM is not constrained to one region. It has a _Global_ scope.  
+__Root Access__ - Our Id (email) with which we created the account. It has root level permissions within our account.
+
+Security settings for Root account
+- ***MFA Configuration***  
+Virtual MFA Application - Use Google Authenticator
+- ***Add Other Users***  
+Create user, set password, add permissions/groups/policies.
+ - Create a sys admin user
+   - add to 'SystemAdministrator' group
+   - day to day administration
+- Create a sys developer user
+   - add to 'SystemAdministrator' group (for now)
+   - development work
+- ***Create a Role***
+Create a Role for EC2 service to access S3 service.
+- ***Setup Billing Alarms***
+   - Setup a budget (monthly, quarterly, anually)
+   - Setup an alarm when reaching a threshold of teh budget
+   - Can be set for Cost, Usage, or Reservation
