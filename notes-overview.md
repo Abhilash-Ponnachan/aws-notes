@@ -183,6 +183,7 @@ AWS IAM provides the following capabilities -
  - Policies - A document that defines one or more permissions
     - We can attach a policy document to users, groups or roles
     - A policy can be shared by multiple identities (users or roles or groups)  
+    - Key-value apir stored as JSON
     An attempt to describe the concepts and relationships visualy -![AWS-IAM-RBAC](AWS-IAM-RBAC.png)
 
 #### IAM Lab
@@ -205,5 +206,22 @@ Create user, set password, add permissions/groups/policies.
 Create a Role for EC2 service to access S3 service.
 - ***Setup Billing Alarms***
    - Setup a budget (monthly, quarterly, anually)
-   - Setup an alarm when reaching a threshold of teh budget
+   - Setup an alarm when reaching a threshold of the budget
    - Can be set for Cost, Usage, or Reservation
+
+### AWS Object Storage & CDN
+#### S3 101
+S3 (Simple Storage Service) is one of the oldest service offerings by AWS. It essentially provides - _durable_, _secure_, _highly scalable_ object storage via simple web services interface. 
+- S3 is _object storage_ - which means it stores the data logically wrapped with its metadata, and have its unique ID (_this is called an object_).   
+It has a flat storage model without a hierarchical path like traditional file storage. This architecture makes it far easier to scale out and, also be more performant for large volumes. _Traditional block storage would have to be scaled up_.  
+Behind the scene objects are replicated across different storage nodes, to ensure durability and availability.  
+- We use S3 for storing documents, media, files etc. Whereas for system data such as OS, databases or applicatios we would use block storage.
+- S3 has virtually unlimited storage.
+- A single file can be upto 5TB!
+- We pay by GB.
+- S3 gives logical containers called "_bucket_" to store objects. Each bucket has a globally unique name with a unique URL to it (for e.g. https://s3-eu-west-1.amazonaws.com/acmebucket).
+- S3 interaction is via HTTP request/response and a successful operation should result in an HTTP 200 status.
+- ***Data Consistency model***  
+S3 achieves HA (High Availability) by replicating data across multiple nodes, even data centers. Theis means that there has to be some agreed model of data consistency between write and read. The S3 model of data consistency is -
+- **Create Operation** - _Read-after-Write_ consistency for PUTS of new objects.  
+What this means is that for 
