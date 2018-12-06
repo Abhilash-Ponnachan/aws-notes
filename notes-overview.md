@@ -223,5 +223,18 @@ Behind the scene objects are replicated across different storage nodes, to ensur
 - S3 interaction is via HTTP request/response and a successful operation should result in an HTTP 200 status.
 - ***Data Consistency model***  
 S3 achieves HA (High Availability) by replicating data across multiple nodes, even data centers. Theis means that there has to be some agreed model of data consistency between write and read. The S3 model of data consistency is -
-- **Create Operation** - _Read-after-Write_ consistency for PUTS of new objects.  
-What this means is that for 
+   - **Create Operation (new object)** - When we put a new object into an S3 bucket _(PUTS of new objects)_ we can expect a  _Read-after-Write_ consistency. What this means is that if we do a _read_ immediately after _putting_ a new object (has returned with a 200 status) we can be guaranteed to get the new object. _The replication across nodes for PUTS of new object is apprently synchronous. Therefore whichever node the read pulls from would have the object._ The sequence diagrams below depict the _read-after-write_ scenarios for new object -
+
+   ![S3-create-new-obj-succ](S3-new-object-succ.png)
+
+   ![S3-create-new-obj-prem](S3-new-object-prem.png)  
+
+   - There is one caveat however, if we attempt a _read_ first (of an object that does not exist yet), then do a _write_ of the new object, and immediately follow with a _read_ of the same then there is no gauarantee to get that new object.  
+      This scenario is depicted in the sequence diagram below -
+   ![S3-new-object-read-first](S3-new-object-read-first.png)
+
+   - **Update & Delete Operation (existing object)** - When we update (PUTS) or delete (DELETE) an existing object we should expect _Eventual Consistency_.   
+   It is obvious that untill the update/delete is propagated to all nodes, a read may not result in the latest updated data. We have to be mindful of this when we deisgn with S3.
+   
+- ***Data Consistency model***  
+S3
