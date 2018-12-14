@@ -233,8 +233,47 @@ S3 achieves HA (High Availability) by replicating data across multiple nodes, ev
       This scenario is depicted in the sequence diagram below -
    ![S3-new-object-read-first](S3-new-object-read-first.png)
 
-   - **Update & Delete Operation (existing object)** - When we update (PUTS) or delete (DELETE) an existing object we should expect _Eventual Consistency_.   
-   It is obvious that untill the update/delete is propagated to all nodes, a read may not result in the latest updated data. We have to be mindful of this when we deisgn with S3.
-   
-- ***Data Consistency model***  
-S3
+   - **Update & Delete Operation (existing object)** - When we update (PUTS) or delete (DELETE) an existing object we should expect _Eventual Consistency_. This means that if we do a read immediately after an update/delete we may get the previous state of the object, however eventually all nodes will have the same value and we will be able to get that latest value after some time.   
+   It is obvious that until the update/delete is propagated to all nodes, a read may not result in the latest updated data. We have to be mindful of this when we deisgn with S3.
+
+- ***Key-Value Store***  
+Amazon S3 has a _key-value_ store data model for storing objects. An object is a composite of the following -
+   - Key - _This is the name of the object, the key with which it is identified_
+   - Value - _This is the actual data - sequence of bytes_
+   - Version ID - _Used for versioning the object_
+   - Metadata - _Tag additional information about your data_
+   - Subresources :
+      - Access Control List (ACL) - _Used for controlling accessing_
+      - Torrent - _Used if we want to torrent our data_
+
+   ![S3-Bucket-Object](S3-bucket-object.png)
+
+- ***Quality Attributes***
+   - Availibility 
+      - S3 is _designed_ for **99.99%** availability
+      - Amazon guarantees **99.9%** availability
+   - Durability
+      - Amazon guarantees **99.999999999% (11 X 9s)** durability of information stored in S3!
+- ***Features***
+   - **Tiered Storage**
+   - **Lifecycle Managment** - Configure to manage the data over time, e.g. _Archive_ after period to Aamazon Glacier.
+   - **Versioning**
+   - **Encryption**
+   - **Access via ACL & Bucket Policies** - Bucket Policies are at _bucket_ level and ACL at _object_ level.
+
+- ***S3 - Storage Tiers/Classes***
+   - **S3 Standard** - 99.99% Availability & 11x9s Durability. Most commonly used!
+   - **S3 IA** - Infrequently accessed data, but still requires _quick access_ when needed. Lower fee than S3-Standard but charges retrieval fee.
+   - **S3 One Zone IA** - Infrequently accessed and stored only in one AZ, hence less durability. It is cheaper.
+   - **Glacier** - Used only for archival data, and is the cheapest option. Glacier has 3 flavours -
+      - Expedited - a few minutes to restore
+      - Standard - 3 to 5 hours for restore
+      - Bulk - 5 to 12 hours for restore
+
+- ***S3 Pricing***
+With S3 we can get charged for -
+   - Storage
+   - Requests
+   - Storage Management Pricing - tags/metadata
+   - Data Transfer Pricing
+   - Transfer Acceleration - faster download/upload using _CloudFront_ (AWS CDN)
