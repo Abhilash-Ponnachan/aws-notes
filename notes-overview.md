@@ -276,4 +276,90 @@ With S3 we can get charged for -
    - Requests
    - Storage Management Pricing - tags/metadata
    - Data Transfer Pricing
-   - Transfer Acceleration - faster download/upload using _CloudFront_ (AWS CDN)
+   - Transfer Acceleration - faster download/upload using _CloudFront_ (AWS CDN)  
+
+_Note: Try to stick to region N.Virginia as that is where AWS first rolls out its new features.This way we can ensure we are always on the latest stack. Though some services are 'global' (region agnostic) in scope such as IAM._
+
+### S3 Lab
+- ***Create S3 Bucket***  
+   - Creating an S3 bucket is quite straight forward from the console UI. The significant thing here is that the bucket-name should be unique (as S3 objects have universal namespace). _Generally people use their organization domain name as a prefix._  
+   - **Default Access**
+   - AWS takes a restrictive approach to ensure security. All newly created S3 buckets are 'private' (not for public access). All objects added to the bucket are also 'private' by default.  
+   It has to be explicitly made public by going to _Permissions_ -> _Public Access Settings_ -> _Edit_.  
+   After making the bucket public, the object has to be made public similarly for access.
+- ***Bucket Properties***  
+   An Amazon S3 bucket has various properties to manage it:
+   - **Versioning** - Keep multiple versions of the same object in the bucket and mange those versions.
+   - **Default Encryption** - Automatically encrypt objects when they are stored in S3.
+   - **Object Lock** - Prevent object from being deleted.
+   - **Tags** - Tag with metadata, use for associating with cost centers etc.
+   - **Transfer Acceleration** - Enable quicker network access using edge CDN.
+   - **Events** - Receive notifications when specific events occur on your bucket.
+   - **Server Access Logging** - Setup access logs to view details of access requests.
+   - **Object Level Logging** - Record object level API activity using _CouldTrail_ data events. This incurs extra cost.
+   - **Static Web Hosting** - Host a static web site that does not require any server side web technologies. I.e. just serve files.
+   - **Requestor Pay** - Option for the requestor to pay base don access, instead of the bucket owner.  
+- ***Bucket Permissions***  
+   Manage permissions on the bucket:
+   - **Public Access**
+   - **ACL**
+   - **Object Policies**
+   - **CORS (Cross Origin Resource Sharing)**  
+- ***Bucket Management***
+   Features to manage the lifetime and usage of a bucket:
+   - **Lifecycle**
+   - **Replication**
+   - **Storage Analyitics**
+   - **Metrics**
+   - **Object Inventory**  
+
+- ***Version Control***  
+We can enable _Versioning_ to track and access different versions of the same object.
+   - Once we enable versioning for a bucket it cannot be _disabled_, it can only be _suspended_. 
+   - Once enabled the bucket keeps track of each version of the object that we upload.
+   - Note that object permission is applied at the version level, which means if an object is public and we upload a new version, then the latter will not automatically be public. We have to explicitly make the new version public.
+   - The URI for accessing a specific version of the object uses a query parameter _versionId_ -  
+   e.g.-> https://s3.amazonaws.com/my-unique-bucket/test-1.txt?versionId=V67j9XSjHYM2Y2NBNAxqLgAOU7PN6akt  
+   - Deleting an object does not actually delete it, it just adds an extra version entry for a _delete marker_. We can still see all the versions if we click _Version_ -> _Show_
+   - We can restore the object by undoing this marker (simply delete that marker entry)!
+   - In order to compeletly remove an object we would have to delete all versions of the object.
+   - Versioning can be integrated with _Lifecycle Rules_.
+   - Versioning MFA Delete capability can be used to provide additional layer of security.  
+- ***Cross-Region Replication (CRR)***  
+We can setup _Replication_ to synch up buckets in different regions.
+   - CRR can only be setup between buckets in different regions.
+   - For replication the _Versioning_ has to be enabled on the target bucket.
+   - We can replicate the entire contents of the bucket or selected items based on _Tags_ or _Prefixes_.
+   - The target bucket for replication can belong to a different accout, and even the ownership of the target bucket can be delegated.
+   - Replication requires an IAM role to be associated with it. This enabes access control and monitoring.
+   - While setting up CRR, there is a gotcha that can catch you unawares. At the step to setup the IAM role for replication we can get an error - _"Inavlid role specified in replication configuration!"_. This happens because the user yu are logged in as is an IAM user without (IAM permissions), i.e. not the _root user_. In order for replication to create the role it requires the current user to have IAM permissions.
+   - Only new and modified objects after turning on CRR will get replicated over, already existing objects do not (_this is similar to Versioining, versions are created only once we turn it on, for existing objects the versions will be nul_). Existing objects have to be copied over via the CLI.
+   - For CLI, install the AWS CLI and then configure it with the _Access Key Id_ and _Secret Access Key_ of the desired user account.
+   ```
+   $ aws configure
+   > ...
+   ```
+   After configuring we can test it by typing in a few commands to check the version, and to list the S3 buckets associated with the configured user
+   ```
+   $ aws --version
+   > aws-cli/1.16.77 Python/3.6.0 Windows/7 botocore/1.12.67
+
+   $ aws s3 ls
+   > ...
+   ```
+   - To copyteh contents over from one bucket the other we use the _copy_ command from the CLI
+   ```
+   $ aws s3 cp --recursive s3://my-source-bucket s3://my-destination-bucket
+   > ...
+   ```
+   Note how the source and destination buckets are specified - _'s3://\<bucket-name\>'_
+   - Now we can go to the console and check and, indeed our objects are copied over from the source bucket to the destination. _Note that if we look at the 'Version Id' of an object, it is a different value in both buckets (this is only for manually copied over objects as we will see)!_
+   - If we now change one of the files within the _source bucket_ and upload it, the change should get replicated across almost immediately. _Note how in this case the latest version of the modified file is automatically copied over and it has the exact same 'Version Id' value in both source and destination buckets!_
+   ```
+   # we can upload from the command line
+   $ aws s3 cp <local-path> s3://<bucket-name>
+   > ...
+   ```
+   - Finally _deleting_ objects (whether it is just placing a _delete marker_ or deleting a spcific _version_), does not get replicated. It is by design, a safety feature to prevent removal of objects from the source bucket, also removing them from the target (which is considered a _backup_).
+   - As of end 2018 we cannot replicate to multiple S3 buckets or be daisy chained, thugh this might change in future.  
+- ***Lifecycle Managment***  
