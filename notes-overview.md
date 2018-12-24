@@ -347,7 +347,7 @@ We can setup _Replication_ to synch up buckets in different regions.
    $ aws s3 ls
    > ...
    ```
-   - To copyteh contents over from one bucket the other we use the _copy_ command from the CLI
+   - To copy the contents over from one bucket the other we use the _copy_ command from the CLI
    ```
    $ aws s3 cp --recursive s3://my-source-bucket s3://my-destination-bucket
    > ...
@@ -361,5 +361,27 @@ We can setup _Replication_ to synch up buckets in different regions.
    > ...
    ```
    - Finally _deleting_ objects (whether it is just placing a _delete marker_ or deleting a spcific _version_), does not get replicated. It is by design, a safety feature to prevent removal of objects from the source bucket, also removing them from the target (which is considered a _backup_).
-   - As of end 2018 we cannot replicate to multiple S3 buckets or be daisy chained, thugh this might change in future.  
+   - As of end 2018 we cannot replicate to multiple S3 buckets or be daisy chained, though this might change in future.  
 - ***Lifecycle Managment***  
+   How to manage data over time. For example move data after some duration to the cheaper S3-IA tier, then later archive it into Glacier or even permenantly delete it. AWS provides a _Lifecycle Management_ service to configure this.
+    - Configure rules to transition objects to tiered storage.
+    - Expire objecst based on rules.
+    - _Lifecycle_ rules can have filters based on prefixes or tags for selective objects.
+    - Transition rules can be applied to _current version_ and/or _previous versions_ of the object.
+    - Can be applied with or without _Versioning_ turned on.
+    - Minimum transition duration is 30 days.
+    - An example of a typical _Lifecycle_ rule would be -  
+    ![S3-Lifecycle](S3-Lifecycle.png)  
+- ***CloudFront Overview***  
+   CloudFront is Amazon's own CDN (Content Delivery Netwrok). A CDN is a system of distributed webservers spread geographically and can host and deliver web content based on the location of the user.  
+   Some key terminology -
+   - **Origin** - The source/origin of the files that are dsitributed via the CDN. In the case of AWS the origins can be S3 buckets, EC2 instances, Elastic Load Balancers, or Route 53 (the former 2 are most common)._Note that an origin does not have to be an AWS service, it acn be ay other web resource_
+   - **Edge Location** - The location where the content will be _cached_. This is different from _Region/AZ_, and for AWS it is spread across the globe.
+       - An edge location is not just read-only, we can write to them (like put an object in). This will thenbehind the scene be pushed up to the origin.
+       - Objects are chaced at the edge location for a duration call TTL (Time To Live).
+       - Objects will automatically expire after the TTL. We can expunge/clear the cached object but we can get chraged for that!
+   - **Distribution** - The logical name given to a collection of _edge locations_.
+   - **Web Distribution** - Typically used for web pages.
+   - **RTMP** - RTMP stands for _Real Time Media Protocol_, used for media streaming on the internet. Though RTMP is being slowly replaced by HLS (HTTP Live Streaming) protocol.
+
+
