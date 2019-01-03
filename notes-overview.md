@@ -332,8 +332,8 @@ We can setup _Replication_ to synch up buckets in different regions.
    - We can replicate the entire contents of the bucket or selected items based on _Tags_ or _Prefixes_.
    - The target bucket for replication can belong to a different accout, and even the ownership of the target bucket can be delegated.
    - Replication requires an IAM role to be associated with it. This enabes access control and monitoring.
-   - While setting up CRR, there is a gotcha that can catch you unawares. At the step to setup the IAM role for replication we can get an error - _"Inavlid role specified in replication configuration!"_. This happens because the user yu are logged in as is an IAM user without (IAM permissions), i.e. not the _root user_. In order for replication to create the role it requires the current user to have IAM permissions.
-   - Only new and modified objects after turning on CRR will get replicated over, already existing objects do not (_this is similar to Versioining, versions are created only once we turn it on, for existing objects the versions will be nul_). Existing objects have to be copied over via the CLI.
+   - While setting up CRR, there is a gotcha that can catch you unawares. At the step to setup the IAM role for replication we can get an error - _"Inavlid role specified in replication configuration!"_. This happens because the user yu are logged in as is an IAM user (typically non-root users are not given IAM permissions), i.e. not the _root user_. In order for replication to create the role it requires the current user to have IAM permissions.
+   - Only new and modified objects after turning on CRR will get replicated over, already existing objects will not (_this is similar to Versioining, versions are created only once we turn it on, for existing objects the versions will be null_). Existing objects have to be copied over via the CLI.
    - For CLI, install the AWS CLI and then configure it with the _Access Key Id_ and _Secret Access Key_ of the desired user account.
    ```
    $ aws configure
@@ -375,13 +375,98 @@ We can setup _Replication_ to synch up buckets in different regions.
 - ***CloudFront Overview***  
    CloudFront is Amazon's own CDN (Content Delivery Netwrok). A CDN is a system of distributed webservers spread geographically and can host and deliver web content based on the location of the user.  
    Some key terminology -
-   - **Origin** - The source/origin of the files that are dsitributed via the CDN. In the case of AWS the origins can be S3 buckets, EC2 instances, Elastic Load Balancers, or Route 53 (the former 2 are most common)._Note that an origin does not have to be an AWS service, it acn be ay other web resource_
+   - **Origin** - The source/origin of the files that are dsitributed via the CDN. In the case of AWS the origins can be S3 buckets, EC2 instances, Elastic Load Balancers, or Route 53 (the former 2 are most common)._Note that an origin does not have to be an AWS service, it can be ay other web resource_
    - **Edge Location** - The location where the content will be _cached_. This is different from _Region/AZ_, and for AWS it is spread across the globe.
-       - An edge location is not just read-only, we can write to them (like put an object in). This will thenbehind the scene be pushed up to the origin.
+       - An edge location is not just read-only, we can write to them (like put an object in). This will then behind the scene be pushed up to the origin.
        - Objects are chaced at the edge location for a duration call TTL (Time To Live).
        - Objects will automatically expire after the TTL. We can expunge/clear the cached object but we can get chraged for that!
    - **Distribution** - The logical name given to a collection of _edge locations_.
    - **Web Distribution** - Typically used for web pages.
-   - **RTMP** - RTMP stands for _Real Time Media Protocol_, used for media streaming on the internet. Though RTMP is being slowly replaced by HLS (HTTP Live Streaming) protocol.
+   - **RTMP** - RTMP stands for _Real Time Media Protocol_, used for media streaming on the internet. Though RTMP is being slowly replaced by HLS (HTTP Live Streaming) protocol.  
+
+   - ***CloudFront Lab***  
+   To solidify the concepts, let us get our hands dirty and setup a CloudFront _distribution_ and test it.   
+   <u>Origin</u>  
+   We shall use an S3 bucket as the _origin_. Let us create one ina region far from us. In my case I am making one in Sydney. Then I give it access permissiona and upload a big mage file. Now I use a script (Python 3) to access this and measure the time it takes to download - 
+   ```python
+   # skipping the initial imports and proxy code
+
+   object_url = 'https://s3-ap-southeast-2.amazonaws.com/my-sydney-bucket/my-large-image.jpg'
+  
+   def access_object(url):
+      rsp = requests.request("GET", url, proxies=proxies)
+      return rsp
+
+   try:
+      ts = time.perf_counter_ns()
+      rsp = access_object(object_url)
+      tt = time.perf_counter_ns() - ts
+      print('status = {0} ; size = {1}'.format(rsp.status_code, len(rsp.content)))
+      print('>> time taken = {0:.2f} seconds'.format(tt/1000000000))
+
+   except Exception as ex:
+      print (ex) 
+   ```
+   This will give us the output - 
+   ```bash
+      status = 200 ; size = 294718
+      >> time taken = 5.81 seconds
+   ```
+   It takes around 5.8 seconds to download around 29KB from my S3 bucket in Sydney!  
+      <u>Distribution</u>  
+   We can now setup a CDN distrtibution to cache this S3 bucket and try to acess the image through the CDN. We can do this from the console and going to _Services_ -> _Networking & Content Delivery_ -> _CloudFront_
+   - For this lab, we shall create a _Web Distribution_  
+   <u>There are a number of options we have to specfy in order to configure the _Distribution_</u> - 
+   - **Origin domain** - We select our S3 bucket -> my-sydney-bucket
+      - For non AWS services we provide the web address of the resource
+
+   - **Origin path** - If there is a directory within our bucket that we want to get the content from then we specify that with a '/'. In this case we leave it blank
+
+   - **Origin ID** - A unique (within the distribution) name for the origin. Note that a distribution can have multiple origins 
+   - **Restrict bucket access** - Setting this will prevent direct access to the _origin_, it can only be accessed via the CDN then. This is especailly useful when we want to restrict to private access via _signed URL_ or _signed cookie_. If we select _Yes_ then we have to set a few additional properties -  
+      - **Origin access identity** - This creates a new user-identity which will be used to access the _origin_ (the S3 bucket in our case) from the CDN
+      - **Grant read permissions on bucket** -  Give the _origin access identity_ permission to access the _origin_ (S3 bucket). Remember to click _Yes update bucket policy_ else this would have to set manually  
+
+   _Since we are blocking direct access to the S3 bucket, there has to be some exception role/identity that can be used by the CDN to access the bucket_
+   - **Viewer protocol policy** - Specify the HTTP & HTTPS behaviour. We shall use _Redirect HTTP to HTTPS_  
+
+   - **Time To Live (TTL)** - Specify the _minimum_, _default_ & _maximum_ TTL values in seconds. We shall leave the default values for now viz. - _default TTL = 24 hrs_ & _maximum TTL = 1 year_. In a real scenario this is an important design consideration as manually invalidating the cache can incur a cost
+
+   - **Restrict viewer access** - When we want to conditionally restrict access to our CDN resource we do that by enabling this option and then generating a _presigned URL_ or _signed cookie_ and accessing the resource using that. For example when we want to restrict access to paid customers. We will not restrict any access 
+
+   - **Lambda Function Association** - Link events on the _distribution_ to a _Lambda Function_. We shall leave this blank  
+
+   - **SSL certificates** - We shall use the default _cloudfront certificate_, but we can opt for a custom SSL certificate if required. Then we can configure and manage that through the _AWS certificate manager_
+   - **Supported HTTP versions** - Now _CloudFront_ has support for HTTP/2 (as well as HTTP/1.1 and older)
+   - **IPv6** - Recently added support for IPv6. It is enabled by default
+
+   - **Applying Restrictions** - We can use this to apply restrictions based on geographical locations. Either _whitelist_ or _blacklist_ the countries that can access the distribution
+
+   _Note that there are many more options and I have ignored them in this list as it is too extensive to cover each in depth. In any case we have left them all as default values!_  
+
+   _Also note that once we create or apply changes, the actual provisioning for the distribution can take a while (15 to 20 minutes at least)_  
+
+   Once created we would have an _ID_ and _Domain Name_ for the _distribution_ that we can use to access the resources. For example we could get a _domain name_ such as - 
+   d651a7rd02db4c.cloudfront.net  
+   Then we can execute the above Python script with the modified object URL via the CloudFront domain name -
+   ```python
+      # use the cloudfront domain name for the resource url
+      object_url = 'https://d651a7rd02db4c.cloudfront.net/my-large-image.jpg
+   ```  
+   Now when we execute the script, we should get the following results -
+    - The first run we would get something like - 
+   ```bash
+      status = 200 ; size = 294718
+      >> time taken = 5.52 seconds
+   ```
+    - The subsequent runs we would get something like - 
+   ```bash
+      status = 200 ; size = 294718
+      >> time taken = 1.48 seconds
+   ```
+   - **Reports & Analytics** - This section provides options to view and analyze the usage of our CloudFront _distributions_
+
+   Finally we have to remember to _disable_ and _delete_ our distribution, as we can get charged for this.
+
 
 
