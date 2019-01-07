@@ -459,6 +459,7 @@ We can setup _Replication_ to synch up buckets in different regions.
       status = 200 ; size = 294718
       >> time taken = 5.52 seconds
    ```
+   The first access tme is no different as it is still pulling the resource down to the nearest edge location.
     - The subsequent runs we would get something like - 
    ```bash
       status = 200 ; size = 294718
@@ -466,7 +467,37 @@ We can setup _Replication_ to synch up buckets in different regions.
    ```
    - **Reports & Analytics** - This section provides options to view and analyze the usage of our CloudFront _distributions_
 
-   Finally we have to remember to _disable_ and _delete_ our distribution, as we can get charged for this.
+   Finally we have to remember to _disable_ and _delete_ our distribution, as we can get charged for this.  
+     
+- ***S3 Security & Encryption***  
+   - **Securiy**  
+      - **Access**  
+      All newly created buckets are private. If we wish to access the objects within a bucket we have to explicitly go and make them _public_ of grant access to them.  
+      There are two ways to control access to S3 buckets -
+         - *Bucket Policies*  
+            These are buckt-wide in scope and apply to all items within the bucket.
+         - *Access Control Lists (ACLs)*  
+            These are more finegrained and can control access to individual objects within a bucket.
+      - **Access Log**  
+      S3 buckets can be configured to log all access requests. These can be logged in the same bucket, a different bucket or even the bucket of a different account!
+   - **Encryption**
+   There two aspects to encrypting data, namely -
+      - **Encryption in Transit**  
+         This is achieved using SSL/TLS  
+      - **Encryption at Rest**  
+         There are 2 appraoches to encrypting data at rest, namely -  
+         - **Server Side Encryption (SSE)**  
+         S3 provides 3 methods for SSE -
+            - *S3 Managed Keys -> SSE-S3*  
+            Each object is encrypted with a unique key and that key is then further encrypted with a master key. AWS mananges all the encryption keys for us behind the scene. It uses AES 256 standard.
+            - *AWS Key Managment Service -> SSE-KMS*  
+            Added feature of control over the envelope key so gives an added layer of protection. It also gives an audit trail of decryption. This coes with some extra charge. 
+            - *SSE with Customer Provided Keys - SSE-C*  
+            In this AWS only manages the encryption/decryption, but we manage the keys.
+         - **Client Side Encryption**  
+         This where we encrypt the data on the client and upload it to the bucket.  
 
+- ***AWS Storage Gateway*** 
+   
 
 
