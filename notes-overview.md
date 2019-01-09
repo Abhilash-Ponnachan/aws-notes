@@ -520,7 +520,7 @@ The diagram below depicts this setup at a basic level -
 There are __4 types__ of Storage Gateways -   
 - **File Gateways (NFS)**  
 This allows us to store _files_ directly as objcets in S3. The buckets are accessed as NFS mount point. Once written to S3 the oject can be treated and managed just as we would any S3 object.  
-![File Gateway](File-Gateway.png)
+![File-Gateway](File-Gateway.png)
 - **Volume Gateways (iSCSI)**  
 This provides a way to use block based storage in the cloud from on-premises applications. The gateway allows us to access the cloud storage as iSCSI volumes. Think of these as _virtual hard drives_ on the cloud!  
 Data written to these volumes are asynchrnously copied as point in time EBS snapshots to the cloud. These snapshots are incremental, they contain only the changed blocks. They are also compressed to minimize storage charges.  
