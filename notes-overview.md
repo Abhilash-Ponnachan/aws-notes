@@ -533,7 +533,8 @@ _Volume Gateways_ are of two types -
    In the case of _Cached Volume_ the primary storage is our cloud storage. All data is written to Amazon S3 (via a staging area - upload buffer). Only recently accessed data is cached locally for low-latency access. Compared to _Stored Voulme_ this approach minimizes the need for us to scale our on-premises storage capacity, while still maintaining local cache for recently accessed data. _Cached Volume_ can range from 1GiB to 32TiB.
 - **Tape Gateways (VTL)**  
 This option provides a cost-effective way to archive data to the cloud. We can use existing tape-based backup infrastructure to bacukup data to _virtual tape cartridges_ that we can create on the _Tape Gateway_. Each gateway is preconfigured with media changer and tape drives. The backup applications can access these as iSCSI devices. A high level diagram dpeicting this setup is given below -  
-![Tape-Gateway](Tape-Gateway.png)  
+<img src="Tape-Gateway.png">
+![Tape-Gateway](./Tape-Gateway.png)  
 
 
 
