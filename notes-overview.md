@@ -497,7 +497,45 @@ We can setup _Replication_ to synch up buckets in different regions.
          - **Client Side Encryption**  
          This where we encrypt the data on the client and upload it to the bucket.  
 
-- ***AWS Storage Gateway*** 
+- ***AWS Storage Gateway***  
+AWS Storage Gateway is a storage service that enables on-premises applications to seamlessly use AWS cloud storage.  
+   - The applications connect to the cloud storage service via a gateway appliance (which can be virtual or physical device)
+   - They can connect to the storage using standard storage protocols such as NFS (_Network File Storage_), SMB (_Server Message Block_), iSCSI (_SCSI over IP_)
+   - The gateway connects to AWS storage services such as _S3_, _EBS_ or _Glacier_ to store _Files_, _Volumes_ or _Tapes_  
+   - We can use this for things such as -  
+      - Storage tiering
+      - Cloud data processing
+      - Backup & recovery
+      - Archiving
+   - The implementation provides -
+      - Highly optimized data-transfer
+      - Bandwidth management
+      - Automated network resilience
+      - Local cache for recently accessed data  
+
+Once installed and activated with our AWS account we can configure it to use the Gateway service as required.  
+The diagram below depicts this setup at a basic level -  
+![AWS Storage Gateway](AWS-Storage-Gateway.png)  
+
+There are __4 types__ of Storage Gateways -   
+- **File Gateways (NFS)**  
+This allows us to store _files_ directly as objcets in S3. The buckets are accessed as NFS mount point. Once written to S3 the oject can be treated and managed just as we would any S3 object.  ![File Gateway](File-Gateway.png)
+- **Volume Gateways (iSCSI)**  
+This provides a way to use block based storage in the cloud from on-premises applications. The gateway allows us to access the cloud storage as iSCSI volumes. Think of these as _virtual hard drives_ on the cloud!  
+Data written to these volumes are asynchrnously copied as point in time EBS snapshots to the cloud. These snapshots are incremental, they contain only the changed blocks. They are also compressed to minimize storage charges.  
+All _Volume Gateway_ data written to the cloud is stored in Amazon S3 as EBS snapshots, they are encrypted at rest using _SSE_. However these snapshots cannot be accessed via teh S3 API or management console!   
+It is importnat to keep in mind that, _Volume Gateway_ services have on-premises storage hardware associated with them.  
+_Volume Gateways_ are of two types -
+   - **Stored Volumes**  
+    All data written to the _Stored Volume_ is written to the on-premises storage hardware associated with that volume and then, asynchronously copied over to Amazon S3 as EBS snapshosts. They can range from 1GiB to 16TiB, and a gateway can support upto 32 volumes (for a total of 512 TiB).  With _Stored Volumes_ we keep a complete copy of the data on-premises.  
+   - **Cached Volumes**  
+   In the case of _Cached Volume_ the primary storage is our cloud storage. All data is written to Amazon S3 (via a staging area - upload buffer). Only recently accessed data is cached locally for low-latency access. Compared to _Stored Voulme_ this approach minimizes the need for us to scale our on-premises storage capacity, while still maintaining local cache for recently accessed data. _Cached Volume_ can range from 1GiB to 32TiB.
+- **Tape Gateways (VTL)**  
+This option provides a cost-effective way to archive data to the cloud. We can use existing tape-based backup infrastructure to bacukup data to _virtual tape cartridges_ that we can create on the _Tape Gateway_. Each gateway is preconfigured with media changer and tape drives. The backup applications can access these as iSCSI devices. A high level diagram dpeicting this setup is given below - 
+![Tape-Gateway](Tape-Gateway.png)
+
+
+
    
 
 
