@@ -535,6 +535,17 @@ _Volume Gateways_ are of two types -
 This option provides a cost-effective way to archive data to the cloud. We can use existing tape-based backup infrastructure to bacukup data to _virtual tape cartridges_ that we can create on the _Tape Gateway_. Each gateway is preconfigured with media changer and tape drives. The backup applications can access these as iSCSI devices. A high level diagram dpeicting this setup is given below -  
 ![Tape-Gateway](Tape-gateway.png)  
 
+- ***AWS Snowball***  
+Sometimes there is a need to move large volumes of data (TiB, PiB) into AWS and trying to do that over the internet can be very time consuming and even expensive. To resolve this Amazon used to provide a service called _Import/Export Disk_. We could send in an external storage disk with our data and AWS could directly transfer the data off the disk (bypassing the internet). This is a phyiscal movement of data via disks. But this poses many challenges with customers sending in different types of disks with different connections, ensuring security etc. In order to manage this, Amazon standrdized this process with a service called _Snowball_. This uses a Amazon provided phyiscal storage appliance to store and tranfer the data.  
+There are 3 types of _Snowball_ services:
+   - **Snowball** - These are Petabyte-scale data tranfer solutions using phyiscal appliances into or out of AWS. This addresses challenges of tranfer-time, bandwidth-costs, and security. These are highly secure, tamper-resistant, 256-bit encrypted devices with full traceability. It is also very cost effective and can be _one fifth_ the cost of tranferring over the internet. Once data is transfered AWS errases the data from the appliance. As of early 2019 they come with 80TB storage capacity.
+   - **Snowball Edge** - These are essentially _Snowball_ with 100TB of storage capacity with _onboard compute_ capability! _Snowball Edge_ comes in two flavours (as of eraly 2019) -
+      - *Snowball Edge Storage Optimized* - They come in 100TB with 24vCPU best for large scale data collection and migration.
+      - *Snowball Edge Compute Optimized* - They provide 52vCPu and optional GPU for high performance machine learning or data analysis use cases.
+   These applainces can be clustered to form larger temperory installations. The come with specific EC2 instances and _Lambda Function_. They cacn collect, pre-process and return data. Good use-cases include IoT stream processing, or pre-processing data for analysis and migration from remote locations, which would eventually transfered to AWS.
+   - **Snowmobile** - _Snowmobile_ is used for Exabyte-scale data transfer. They are essentially a mini DC on wheels - A 45 foot long ruggedized shipping container pulled by a semi-trailer truck! The service is provided accompanied by specialists who help assess, connect, transfer and scecure the data. Each _Snowmobile_ has a capacity of do 100PB.  
+   It comes with 256-bit encryption, full trace of chain-of-custody. In addition it has 24/7 video surveillance, security personnel and GPS tracking.  
+   It is a very cost effective way to transfer huge volumes of data securly and in less time. It can even do a complete data center migration. 
 
 
 
