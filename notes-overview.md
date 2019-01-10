@@ -520,7 +520,7 @@ The diagram below depicts this setup at a basic level -
 There are __4 types__ of Storage Gateways -   
 - **File Gateways (NFS)**  
 This allows us to store _files_ directly as objcets in S3. The buckets are accessed as NFS mount point. Once written to S3 the oject can be treated and managed just as we would any S3 object.  
-![File-Gateway](File-Gateway.png)
+![File-Gateway](File-gateway.png)
 - **Volume Gateways (iSCSI)**  
 This provides a way to use block based storage in the cloud from on-premises applications. The gateway allows us to access the cloud storage as iSCSI volumes. Think of these as _virtual hard drives_ on the cloud!  
 Data written to these volumes are asynchrnously copied as point in time EBS snapshots to the cloud. These snapshots are incremental, they contain only the changed blocks. They are also compressed to minimize storage charges.  
@@ -533,7 +533,7 @@ _Volume Gateways_ are of two types -
    In the case of _Cached Volume_ the primary storage is our cloud storage. All data is written to Amazon S3 (via a staging area - upload buffer). Only recently accessed data is cached locally for low-latency access. Compared to _Stored Voulme_ this approach minimizes the need for us to scale our on-premises storage capacity, while still maintaining local cache for recently accessed data. _Cached Volume_ can range from 1GiB to 32TiB.
 - **Tape Gateways (VTL)**  
 This option provides a cost-effective way to archive data to the cloud. We can use existing tape-based backup infrastructure to bacukup data to _virtual tape cartridges_ that we can create on the _Tape Gateway_. Each gateway is preconfigured with media changer and tape drives. The backup applications can access these as iSCSI devices. A high level diagram dpeicting this setup is given below -  
-![Tape-Gateway](./Tape-Gateway.png)  
+![Tape-Gateway](Tape-gateway.png)  
 
 
 
