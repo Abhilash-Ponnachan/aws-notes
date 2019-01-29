@@ -546,7 +546,40 @@ There are 3 types of _Snowball_ services:
    - **Snowmobile** - _Snowmobile_ is used for Exabyte-scale data transfer. They are essentially a mini DC on wheels - A 45 foot long ruggedized shipping container pulled by a semi-trailer truck! The service is provided accompanied by specialists who help assess, connect, transfer and scecure the data. Each _Snowmobile_ has a capacity of do 100PB.  
    It comes with 256-bit encryption, full trace of chain-of-custody. In addition it has 24/7 video surveillance, security personnel and GPS tracking.  
    It is a very cost effective way to transfer huge volumes of data securly and in less time. It can even do a complete data center migration. 
+A _Snowball_ can import to or export from _S3_. If we want to use _Glacier_ we would have to do it via _S3_.
 
+- ***S3 Transfer Acceleration***  
+This is a new service that allows us to leverage _CloudFront_ to accelerate transfer of data to and from S3.  
+When we setup a bucket we can enable _Transfer Accelerate_ option on it and this will give us a _Cloudfront_ endpoint for our S3 bucket, something like :  <u>my-bucket-name.s3-accelerate.amazonaws.com</u>  
+Now we can use this endpoint to interact with the bucket and, AWS will behind the scene synch up the data to the S3 bucket.
+
+- ***Static Website using S3***
+Amazon S3 provides an easy way to host static websites. Essentially a website that serves up files (HTML pages, that can have CSS and JS if needed). It cannot have any server side code or runtime such as ASP, ASP.net, Servelet or Spring etc.  
+In order to do this we simply use the _Static Web Hosting_ option in the _properties_ tab of the S3 bucket.    
+This should give us an endpoint such as: <u>http://myBucketName.s3-website-us-east1.amazonaws.com</u>  
+Specify the _index document_ (index.html or defualt.html), and the _error document_ (error.html).  
+In order for us to access the files within the bucket we would have to make it _public access_ and the contents within it public by configuring the _bucket policy_. The latter can be configured using JSON as shown:
+```JSON
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "PublicReadGetObject",
+			"Effect": "Allow",
+			"Principal": "*",
+			"Action": [
+				"s3:GetObject"
+			],
+			"Resource": [
+				"arn:aws:s3:::myBucketName/*"
+			]
+		}
+	]
+}
+```  
+Now we can upload our souce files (HTML, CSS, JS) and then we are good to go. If we access the resource using the url <u>http://myBucketName.s3-website-us-east1.amazonaws.com</u> it should got the site and the default page (index.html in our case) should be served to the browser.  
+Note : Even though we call it static website, the pages can be interactive with client-side code.  
+The advantage of using S3 to host content websites is that it can scale automatically and many organizations use this approach if they feel that there might be huge and variable demand.
 
 
    
