@@ -161,6 +161,7 @@ The services that come in the scope of the AWS Solutions Architect - Associte ex
 Again not all services in all these are equally important. The SA associate exam is quite broad in scope.
 
 ## IAM (Identity Acess Management)
+==================================================
 
 ### IAM 101
 Setting up users and managing their access to the AWS services.  
@@ -209,8 +210,9 @@ Create a Role for EC2 service to access S3 service.
    - Setup an alarm when reaching a threshold of the budget
    - Can be set for Cost, Usage, or Reservation
 
-### AWS Object Storage & CDN
-#### S3 101
+## AWS Object Storage & CDN
+==================================================
+### S3 101
 S3 (Simple Storage Service) is one of the oldest service offerings by AWS. It essentially provides - _durable_, _secure_, _highly scalable_ object storage via simple web services interface. 
 - S3 is _object storage_ - which means it stores the data logically wrapped with its metadata, and have its unique ID (_this is called an object_).   
 It has a flat storage model without a hierarchical path like traditional file storage. This architecture makes it far easier to scale out and, also be more performant for large volumes. _Traditional block storage would have to be scaled up_.  
@@ -581,7 +583,70 @@ Now we can upload our souce files (HTML, CSS, JS) and then we are good to go. If
 Note : Even though we call it static website, the pages can be interactive with client-side code.  
 The advantage of using S3 to host content websites is that it can scale automatically and many organizations use this approach if they feel that there might be huge and variable demand.
 
+## EC2 (Elastic Compute Cloud)
+==================================================
 
-   
+### EC2 101
 
+#### What is EC2
+It is an AWS service that provides resizable compute capacity on demand in the cloud. We can obtain and provision server instances in minutes to scale up or down depending on demand.  
+This not only improves the time to scale up or down, but also changes the economics of server infrastructure, as now we can pay for what we use (or provision) rather than heavy upfront capital expenditure. Also typically in the old world we would always overprovision with enough spare capacity that we could grwo into. This would leave us with unused capacity that we had paid for, and eventually fill up till we have to buy again! 
+
+#### EC2 Billing Options
+This brings us to the different pricing models that AWS provides for EC2. Each option is designed with different use cases in mind, and one of the importnat skills for architect is to be able to identify the optimal option for a given scenario.  
+The various billing options are:  
+   - **On-Demand** - This option allows us to pay a fixed rate by the hour (_in the case of Windows servers_) or seconds (_for Linux servers_), without any commitment.
+      - Where we need the flexibility without long term commitment.
+      - For _workloads_ that are spiky, or unpredictable and cannot be interrupted.
+      - Applications that are being developed on AWS for the first time.
+      - Keywords - _Variable_ or _Unpredictable_ Workloads, _No Commitments_.
+
+   - **Reserved** - We can sign up for a contract term of 1 Year or 3 years. Whilst this ties us in for the period, we get a significant discount on the hourly rate.
+      - This is a good fit for applications that have a known predictable demand.
+      - Applications for which we need fixed reserved capacity.
+      - Up-front payments and longer terms give us greater discounts
+         - For standrad RIs a full up-front payment for 3 year term can give 75% off the on-demand price!
+         - For convertible RIs this can be upto 54% off. Convertible RIs give us some flexibility to change some configurations like going from a CPU optimized instance to a Memory optimized instance. The conversion has to result in instances of >= value as the existing.
+
+   - **Spot** - Spot instances allows us to _bid_ a price for some capacity and use it when it is available. This can then be offloaded as well. It is similar to bidding and selling stocks, and works well in situations which affords flexibility in start and end times.
+      - Applications that have a huge amount of compute needed (like pharmaceuticals, genomics etc.) but have flexibility in the time they do it.
+      - Requires very low compute prices.
+
+   - **Dedicated Hosts** - These are single-tenant hardware deicated to the customer, with configuration they can control. This might be needed if we have softwares that have server-bound licenses.
+      - Regulatory requirements might enforce dedicated hardware for a tenant.
+      - Some software licenses are hardware bound and cannot be used in a multi-tenant installation.
+      - Can be purchased as reservation for upto 70% off the on-demand price. 
+      - Tenancy attributes for instances -
+         - _default_ - instance runs on shared hardware
+         - _dedicated_ - instance runs on _single-tenant_ hardware
+         - _host_ - instance runs on dedicated hardware, with _configurations_ the customer _can control_
+
+   - **Dedicated Instances** - We can pay by the hour for instances that run on single-tenant hardware.
+
+   - **Scheduled** - These would be instances that are available on a specified schedule on a recurring basis for a 1 year period.
+
+   - **Capacity Reservation** - Reserve capacity for EC2 instances for any duration in an specific AZ.
+
+#### EC2 Instance Types
+When we setup an EC2 instance, the _instance-type_ determines the hardware of the _host_ computer used. The instance types are optimized for different resource configurations such as CPU, memory, storage, IO and are grouped into instance families based on these capabilities.  
+The _instance families_ are:  
+> 1 - **General Purpose**  
+General purpose inatnces are the common standard instance types that provide a balance of _compute_, _memory_, _storage_, _network_ resources and can be used for a variety of workloads.
+   - M5, M5a, M5d - _These are based on the Intel Xeon scalable processor or the AMD EPYC processor._ 
+   - A1 - _They are the first generation of ARM processor  based instances._
+   - T2, T3 - _These instance types provide a baseline level of CPU with the ability to burst to higher levels when required by the workload._
+
+> 2 - **Compute Optimized**  
+These instance types are optimized for heavy compte workloads (like data analytics) and have higher ratio of vCPUs and core with higher clock-speeds.
+   - C4, C5 - _The latest of the compute optimized category._
+
+> 3 - **Memory Optimized**  
+For use cases requiring large RAM (like in-memory data processing or analytics) this family of instance types are best.
+   - R4, R5, R5a, R5d - _These are the baseline memory optimized instance type._
+   - X1 - _Extremely high memory requirements._
+   - Z1 - _They provide high compute along with high memory._
+
+> 4 - Storage Optimized
+
+> 5 - Accelerated Computing
 
