@@ -646,7 +646,15 @@ For use cases requiring large RAM (like in-memory data processing or analytics) 
    - X1 - _Extremely high memory requirements._
    - Z1 - _They provide high compute along with high memory._
 
-> 4 - Storage Optimized
+> 4 - **Storage Optimized**  
+These instance types provide large local storage within the instance itself. They are best suited for workloads that require high volume/rate of sequential read-write of large data-sets on local storage. They can deliver tens of thousands of IOPS.
+   - D2
+   - H1
+   - I3
 
-> 5 - Accelerated Computing
+> 5 - **Accelerated Computing**  
+For workloads that require high performance computing or massive parallel processiing AWS provides instance types that have access to hardware-based compute accelerators like GPUs (Graphichs Processing Units) and FPGAs (Field Programmable Gate Arrays).
+   - F1 - _FPGA-based instance type for computationally intensive algorithms._
+   - P2, P3 - _GPU-based instance type._
+   - G2, G3 - _GPU-based instance type._
 
