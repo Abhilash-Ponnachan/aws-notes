@@ -656,5 +656,15 @@ These instance types provide large local storage within the instance itself. The
 For workloads that require high performance computing or massive parallel processiing AWS provides instance types that have access to hardware-based compute accelerators like GPUs (Graphichs Processing Units) and FPGAs (Field Programmable Gate Arrays).
    - F1 - _FPGA-based instance type for computationally intensive algorithms._
    - P2, P3 - _GPU-based instance type._
-   - G2, G3 - _GPU-based instance type._
+   - G2, G3 - _GPU-based instance type._  
+
+The table below shows a high-level overview of the instance familes with the types of instances and uses cases - 
+![EC2-instance-types](EC2-instance-types.png)  
+_There are a few mnemonics to help remember these types_ - 
+   - gMAT
+   - cC
+   - mR XZ
+   - FPGa
+   - DIsH
+
 
