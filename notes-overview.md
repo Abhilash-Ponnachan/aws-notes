@@ -667,4 +667,33 @@ _There are a few mnemonics to help remember these types_ -
    - FPGa
    - DIsH
 
+##### Format - Instance Types
+The EC2 instance type names could look cryptic - _m5.2xlarge, t3.medium, t2.micro, r5d.4xlarge, p3dn.24xlarge_  
+But there is a method to this madness, the instance type name actually conveys information about the size and certain capabilities of the instance such as - 
+   - Number of vCPUs
+   - Clock speeds
+   - Presence of h/w acceleration - GPU, FGPA
+   - Amount of RAM
+   - Presence of Local-storage
+   - Network connectivity & speed
+The general format is -  
+**\<family>\<generation>[\<sub-indicator>].\<t-shirt size>**  
+> **Family** - Type prefixes such as _m, t, a, c, r, x, z, f, g, p, d, i, h_
 
+> **Generation** - Indicates the version of the technology within the same family. Higher numbers mean more recent versions and normally more advanced
+
+> **Sub-indicator** - Indicates the presence of some specific capabilities that differentiates its from adjacent types in the family/generation -   
+   - > _d_ - They have instance-storage, which means on these instances there is locally attached storage on the host that can be accessed directly (in addition to EBS)
+   - > _n_ - They are optimized for network speed supporting throughputs of 100 GBPS.
+
+> **T-shirt size** - Indicates the number of vCPUs and RAM there is. The higher the size more RAM and processor cores. A general rule of thumb for deciphering vCPUs is - 
+   - > _large_ - 2 vCPUs
+   - > _xlarge_ - 2 X large = 4 vCPUs
+   - > _4xlarge_ - 3 X xlarge = 12 vCPUs  
+
+   For RAM there is no clean pattern but higher numbers have more.  
+
+So for example _c5d.9xlarge_ : _compute optimized_ - _5th generation_ - _local storage_ - _36 vCPUs_  
+
+#### AMI (Amazon Machine Image)
+An AMI provides the configuration information required to launch an instance.
