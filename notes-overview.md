@@ -696,4 +696,20 @@ The general format is -
 So for example _c5d.9xlarge_ : _compute optimized_ - _5th generation_ - _local storage_ - _36 vCPUs_  
 
 #### AMI (Amazon Machine Image)
-An AMI provides the configuration information required to launch an instance.
+An AMI provides the configuration information required to launch an instance. It is preconfigured with the information about the root volume, OS, software packages if any. When we launch an EC2 instance the first thing we do is to select an AMI which has the configurations needed for that instance.  
+Components of an AMI:
+   - A template for the _Root Volume_ of teh instance, which would contain   
+      - Operating System
+      - Additional softwares
+   - Launch permissions that control which AWS accounts can use the AMI to launch instances.
+   - Block device mapping, which specifies the volume to be attached to the instance when launched.  
+
+AMIs come in different categories and falvours:
+-  _Standard AMIs_ - These are AMIs provided by AWS for standard configurations and available for most of the operating systems and associated softwares.
+- _AMI Market-place_ - There are many 3rd-parties that can create AMIs with configurations for their products, software packages. They are mostly applicable for licensed software.
+- _Our Custom AMIs_ - We can create our own AMIs and then use those to launch EC2 instances for specific uses. To do this we can launch an instance from an existing AMI, custmize the instance and then save the configuration as a new AMI. We can also decide to make it _EBS-backed-AMI_ or _Instance-store-backed-AMI_.
+   - We can decide to keep our custom AMIs private or ake it public for sharing or purchase
+
+**De-regsitering an AMI** will prevent any new instances from being launched with that. Existing instances will not be affected.
+
+_Amazon Linux 2_ and _Amazon Linux AMI_ are the most common AMIs. These are provided and maintained by AWS. They provide upto date Linux versions with common software packages, as well as packages to integrate with common AWS services and utilities.
