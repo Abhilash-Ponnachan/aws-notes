@@ -590,7 +590,7 @@ The advantage of using S3 to host content websites is that it can scale automati
 
 #### What is EC2
 It is an AWS service that provides resizable compute capacity on demand in the cloud. We can obtain and provision server instances in minutes to scale up or down depending on demand.  
-This not only improves the time to scale up or down, but also changes the economics of server infrastructure, as now we can pay for what we use (or provision) rather than heavy upfront capital expenditure. Also typically in the old world we would always overprovision with enough spare capacity that we could grwo into. This would leave us with unused capacity that we had paid for, and eventually fill up till we have to buy again! 
+This not only improves the time to scale up or down, but also changes the economics of server infrastructure, as now we can pay for what we use (or provision) rather than heavy upfront capital expenditure. Also typically in the old world we would always overprovision with enough spare capacity that we could grow into. This would leave us with unused capacity that we had paid for, and eventually fill up till we have to buy again! 
 
 #### EC2 Billing Options
 This brings us to the different pricing models that AWS provides for EC2. Each option is designed with different use cases in mind, and one of the importnat skills for architect is to be able to identify the optimal option for a given scenario.  
@@ -601,14 +601,15 @@ The various billing options are:
       - Applications that are being developed on AWS for the first time.
       - Keywords - _Variable_ or _Unpredictable_ Workloads, _No Commitments_.
 
-   - **Reserved** - We can sign up for a contract term of 1 Year or 3 years. Whilst this ties us in for the period, we get a significant discount on the hourly rate.
+   - **Reserved** - We can sign up for a contract term of 1 year or 3 years. Whilst this ties us in for the period, we get a significant discount on the hourly rate.
       - This is a good fit for applications that have a known predictable demand.
       - Applications for which we need fixed reserved capacity.
       - Up-front payments and longer terms give us greater discounts
          - For standrad RIs a full up-front payment for 3 year term can give 75% off the on-demand price!
          - For convertible RIs this can be upto 54% off. Convertible RIs give us some flexibility to change some configurations like going from a CPU optimized instance to a Memory optimized instance. The conversion has to result in instances of >= value as the existing.
 
-   - **Spot** - Spot instances allows us to _bid_ a price for some capacity and use it when it is available. This can then be offloaded as well. It is similar to bidding and selling stocks, and works well in situations which affords flexibility in start and end times.
+   - **Spot** - Spot instances allows us to _bid_ a price for some capacity and use it when it is available. This can then be offloaded as well. It is similar to bidding and selling stocks, and works well in situations which affords flexibility in start and end times.  
+   Spot instances are charged by the hour, and they can get terminated if the price goes above your bid-price. If this happens then AWS will not charge for the partial hour. However if you terminate the instance in between and hour you can get charged for the whole hour.
       - Applications that have a huge amount of compute needed (like pharmaceuticals, genomics etc.) but have flexibility in the time they do it.
       - Requires very low compute prices.
 
@@ -698,7 +699,7 @@ So for example _c5d.9xlarge_ : _compute optimized_ - _5th generation_ - _local s
 #### AMI (Amazon Machine Image)
 An AMI provides the configuration information required to launch an instance. It is preconfigured with the information about the root volume, OS, software packages if any. When we launch an EC2 instance the first thing we do is to select an AMI which has the configurations needed for that instance.  
 Components of an AMI:
-   - A template for the _Root Volume_ of teh instance, which would contain   
+   - A template for the _Root Volume_ of the instance, which would contain   
       - Operating System
       - Additional softwares
    - Launch permissions that control which AWS accounts can use the AMI to launch instances.
@@ -712,4 +713,30 @@ AMIs come in different categories and falvours:
 
 **De-regsitering an AMI** will prevent any new instances from being launched with that. Existing instances will not be affected.
 
-_Amazon Linux 2_ and _Amazon Linux AMI_ are the most common AMIs. These are provided and maintained by AWS. They provide upto date Linux versions with common software packages, as well as packages to integrate with common AWS services and utilities.
+_Amazon Linux 2_ and _Amazon Linux AMI_ are the most common AMIs. These are provided and maintained by AWS. They provide upto date Linux versions with common software packages, as well as packages to integrate with common AWS services and utilities.  
+
+#### EC2 Data Storage
+EC2 provides us with a number of data-storage options, each with its own _performance_ & _durability_ characteristics.  
+Before we delve into the types of EC2 storage solutions, we should have a basic understanding of the different types of storage technologies. The table below should give a sufficient overview for our purpose:
+![Types-of-storage](Types-of-storage.png)  
+
+The storage options available with EC2 are:
+-  Elastic Block Store (Amazon EBS)
+-  Amazon Instance Store
+-  Elastic File System (Amazon EFS)
+-  Simple Storage Service (Amazon S3)
+
+Whenever we launch an instance from an AMI, a _root storage device_ is instantiated for it which contains all the OS information to boot the instance. This is specified in the AMI.  
+We can specify additional storage volumes in the AMI using _block device mapping_.
+
+##### Amazon Elastic Block Store (EBS)
+- EBS provides _durable_ block storage for use with EC2.  
+- They are highly _available_ and _reliable_ storage volumes that can be attached to any running EC2 instance within the same AZ.
+- An EBS volume behaves like an external block device that we can attach to an instance. A given EBS volume can be attached only to a single instance at a time.
+- An instance though can have multiple EBS volumes (depending on the Account limit).
+- EBS volumes persist independently of the lifetime of EC2 instances. They can be detached from one instance and attached to another.
+- EBS is best suited for database-style applications that have high random I/O, and also for throughput-intensive applications that have long continuous read-write.
+- Amazon EBS encryption provides a simple encryption-at-rest solution. 
+   - If we attached an _encrypted EBS volume_ to a _supported instance_ all, data-at-rest, disk I/O, and snapshots created from that volume are encrypted. Encryption happens on the associated EC2 instance and provides data-in-transit encryption from the insyance to the EBS volume. This typically uses the AWS Key Management Service (KMS), but we can choose to use Customer Master Key (CMK) if needed. 
+- For backup we can create a _snapshot_ and store that _snapshot_ in S3. 
+- We can also create an EBS volume from an S3 _snapshot_ and attach that to another instance.
