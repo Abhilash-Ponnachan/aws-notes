@@ -740,3 +740,27 @@ We can specify additional storage volumes in the AMI using _block device mapping
    - If we attached an _encrypted EBS volume_ to a _supported instance_ all, data-at-rest, disk I/O, and snapshots created from that volume are encrypted. Encryption happens on the associated EC2 instance and provides data-in-transit encryption from the insyance to the EBS volume. This typically uses the AWS Key Management Service (KMS), but we can choose to use Customer Master Key (CMK) if needed. 
 - For backup we can create a _snapshot_ and store that _snapshot_ in S3. 
 - We can also create an EBS volume from an S3 _snapshot_ and attach that to another instance.
+##### Amazon EC2 Instance Store
+- This is block storage that is physically attached to the host machine.
+- Instance store is _not a durable_ storage, and is persisted only for the lifetime of teh instance.
+   - If the instance _stops_, or _terminates_, or there is s _hard disk failure_, all data will be lost.
+   - If the instance _reeboots_, however the data would be retained.
+- Instance store is suitable for temperory storage use-cases such as scratch-data, buffers, caches, temperory files etc.
+- Instance store volumes have to be specified when the instance is launched. Then it has to be formatted and mounted. We cant't add instance store volumes after the instance is launched.
+- We can't detach an instance store volume and attach it to another instance. It is tied to the instance it was luanched with.
+- If we create an AMI from an instance, the data on the associated instance-storage is not part of the image.
+- Instance sotre costs are part of the instance's usage-cost.
+##### Amazon Elastic File System (EFS)
+- EFS povides scalable file storage for EC2 instances.
+- We can use EFS as a common data source across workloads/applications running on multiple instances.
+- We first create an EFS, then configure our instance to mount the EFS (_specify a mount-point_) and finally use it for storing data.
+- As of 2019 Feb, EFS is not availabe for Windows inatnces.
+##### Amazon Elastic File System (EFS)
+- Amazon S3 provides reliable, highly-scalable, inexpensive data stirage solition.
+- S3 is an _object storage_ and stores data as _objects_ within _buckets_.
+- _Buckets_ help organize the S3 namspace at the top level, and associates it with an account. Each _bucket_ has to be a globally unique name. 
+- S3 _objects_ are accessed through HTTP/S.
+- AWS stores S3 objects redundantly on multiple devices across multiple facilities.
+- S3 allows _concurrent_ reads & writes to the _object_ by many different clients. This makes it ideal for distributed computing architectures where concurrency is primary, and eventual consistency is acceptable.
+- Amazon uses S3 to stores AMIs and snapshots (backup copies) of data volumes.
+- S3 also supports APIs to interact with it programatically.
