@@ -755,7 +755,7 @@ We can specify additional storage volumes in the AMI using _block device mapping
 - We can use EFS as a common data source across workloads/applications running on multiple instances.
 - We first create an EFS, then configure our instance to mount the EFS (_specify a mount-point_) and finally use it for storing data.
 - As of 2019 Feb, EFS is not availabe for Windows inatnces.
-##### Amazon Elastic File System (EFS)
+##### Amazon Simple Storage Service (S3)
 - Amazon S3 provides reliable, highly-scalable, inexpensive data stirage solition.
 - S3 is an _object storage_ and stores data as _objects_ within _buckets_.
 - _Buckets_ help organize the S3 namspace at the top level, and associates it with an account. Each _bucket_ has to be a globally unique name. 
