@@ -763,4 +763,67 @@ We can specify additional storage volumes in the AMI using _block device mapping
 - AWS stores S3 objects redundantly on multiple devices across multiple facilities.
 - S3 allows _concurrent_ reads & writes to the _object_ by many different clients. This makes it ideal for distributed computing architectures where concurrency is primary, and eventual consistency is acceptable.
 - Amazon uses S3 to stores AMIs and snapshots (backup copies) of data volumes.
-- S3 also supports APIs to interact with it programatically.
+- S3 also supports APIs to interact with it programatically.  
+
+### EC2 Lab
+Now we can play around with setting up an EC2 instance, launching it and then connecting to it remotely over SSH.  
+
+**Launching and Instance**
+- So we go to the _EC2 Dashborad_, then click on _Launch new instance_.
+- This should give us a list of AMIs to choose from. We shall choose a _Amazon Linux 2 AMI (HVM), SSD Volume Type_ image.
+- For the instance-type we shall be using a _"t2.micro"_ , which is sufficient for our purposes.
+- Now we _configure instance details_:
+   - Number of instances = 1
+   - Network = _leave it as the default vpc_
+   - Subnet = _A CIDR address block-range, that represents an AZ. A subnet cannot span across AZs_. Leave it as default.
+   - Auto-assign Public IP = _Use subnet setting_
+   - IAM Role = _Leave it as None_
+   - Shutdown Behaviour = _Leave it as Stop_
+   - Enable Termination Protection = _Let us turn it on and see how to turn it off later_
+   - Monitoring = _We don't want detailed CloudWatch monitoring, so leave it unchecked_
+   - Tenancy = _Default, run instance on shared hardware_
+   - _There are many more options now with placement-groups, advanced-details etc. We will not be using any of these and leave those default_.
+- Next we _add storage_:
+   - We can see the _root_ volume details. 
+   - It has the "_delete on termination_" option turned on by default, which means that if the instance is terminated then the storage attached to the root volume will be deleted.
+   - There is an _Encryption_ option, but that can be applied only to additional storage. The _root_ volume cannot be encrypted (by default). _There are ways to create and provision encrypted root volume AMIs_.
+   - We can have additional storage volumes if needed, but we shall leave it as it is now.
+- Next we can add _Tags_:
+   - We add custom attributes/tags to help collect data for reporting and cost control. In production scenarios we would use _tags_ extensively.
+- Finally we _configure security groups_:
+   - "_Security groups_" are just a set of _firewall rules_ that control network traffic to our instance.
+   - So give a "security group name", and "description".
+   - Select SSH, HTTP, and HTTPS types of traffic. Leave the "_Source_" as _"Anywhere"_ for now. We can restrict the source to specific IP address ranges if we wish to. In our case since we do not have static-IPs to use we shall just leave it as _"Anywhere"_ and make sure we delete/turn off the instance once we are done!
+- At last we can _review_ & _launch_ the instance. It will now ask to create a _"public-private key-pair"_. Download and keep a copy of this _"*.pem"_ file. This will be used to securly connect to our instance (over SSH for example).
+- Now the machine will be launched, and we can see it in the _instances dashboard_. If we select our machine we should be able to see its properties. We can see the _public IP_ for the instance.
+
+**Connecting to the Instance**
+- Connecting via SSH:
+   - On Windows we can use _Putty_ but I prefer to use _Git Bash_.
+   - To keep things clean let us move the _"*.pem"_ file to new sub-folder _"./ssh"_
+   - Set permissions on the file with:
+   ```bash
+   $ chmod 400 my-key-pair.pem
+   ```
+   - This will make it readonly for the current user and not accessible to anyone else.
+   - Now we can SSH to the instance using the command:
+   ```bash
+   $ ssh -i <path-to-pem-file> <user-name>@<host>
+   ```
+   - Amazon EC2 instances have some default user names we can use, depending on the AMI:
+      - Amazon Linux = ec2-user
+      - RHEL = root / ec2-user
+      - Ubuntu = ubuntu
+      - Fedora = fedora / ec2-user
+      - SUSE Linux = root / ec2-user
+   - For the -"host"_ we can use the _"public IP address"_ of the instance.
+   - So in our case we would ssh in like:
+   ```bash
+   $ ssh -i ./ssh/my-key-pair.pem ec2-user@100.31.35.29
+   ```
+   - This should now establish an SSH connection to our EC2 instance as _"ec2-user"_ in the console.
+   - From here we can interact with the machine from the CLI as if we were connected locally.
+   - Once we are done playing around with it, _we can terminate the instance_.
+
+### EC2 Security Groups
+Now
