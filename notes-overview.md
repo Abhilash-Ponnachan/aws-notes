@@ -826,4 +826,32 @@ Now we can play around with setting up an EC2 instance, launching it and then co
    - Once we are done playing around with it, _we can terminate the instance_.
 
 ### EC2 Security Groups
-Now
+_"Security Groups"_ are essentially a _set of firewall rules_ and controls traffic to/from our EC2 instances. When an EC2 instance is launched it should at least have one _security group_. An instance can have multiple _security groups_.  
+- When we setup a _security group_ we specify the following:  
+   - **Type of connection** - SSH, HTTP, HTTPS etc.
+   - **Protocol (trannsport)** - TCP
+   - **Port range** - 22, 80, 443 etc.
+   - **Source connection (IP range)**
+      - _Allowed source IP address range_
+      - e.g. for any - 0.0.0.0/0
+
+- Any changes we make to the _security group_ will apply immediately.
+
+- On key point about _security groups_ is that these rules are "stateful", which means that if a rule is applicable for an _inbound_ request it is automatically applied to _outbound_ response. If we wish to explicitly control the outbound differently from the inbound we can use _ACLs_ when setting up the _VPC_ (which we shall cover later).
+
+- _Security groups_ have a _default-exclude explicit-include_ model. By default nothing is allowed, we have to explicitly include the traffic (type, protocols, ports, IPs) that we want. We can't use _security group_ to explicitly exclude traffic.
+
+- When we create an EC2 instance AWS automatically assigns it to a default VPC _security group_ with source as itself. So, essentially our instances can connect to each other by default and prevent other connections unless we allow it. 
+
+- EC2 instances and _security groups_ have a many-to-many relationship. Just as an EC2 instance can have multiple _security groups_, a _security group_ can be applied to multiple EC2 instances.  
+
+- <ToDo - Installing Apache httpserver and testing a simple index.html>
+
+### EBS Volumes - Lab
+In this section we shall play around a bit with EBS volumes and list out their main properties.  
+- Let us create a new instance (t2-micro), and attach an additional volume to it.
+- In the _"storage-volumes"_ section we can...  
+- Formatting and mounting Liux disk
+- Rebbot mount
+- Change volumme type and size on the fly
+- Snapshots and images for backup/restore & transfer - AZ/region
