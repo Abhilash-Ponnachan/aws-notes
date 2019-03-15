@@ -849,9 +849,96 @@ _"Security Groups"_ are essentially a _set of firewall rules_ and controls traff
 
 ### EBS Volumes - Lab
 In this section we shall play around a bit with EBS volumes and list out their main properties.  
-- Let us create a new instance (t2-micro), and attach an additional volume to it.
-- In the _"storage-volumes"_ section we can...  
-- Formatting and mounting Liux disk
+- Let us create a new instance, and attach an additional volume to it.
+- Select an _"Amazon Linux AMI"_ with _"t2.micro"_ instance type, and leave all other configuration details as defult.
+- Now we configure the _storage options_:
+
+  - The instance would have a default _Root_ volume which would mostly be a _"General Purpose SSD"_, and some device name like _"dev/xvda"_.
+
+  - Let us add an additional storage volume - an _"EBS"_ volume, make it _"Magnetic Standard"_ with 8GiB size.This mighet get a device name _"dev/xvdb"_.
+
+- Next we add some name tag, and then configure the _"Security Group"_ to be able to access this instance via SSH.
+
+- Finally launch the instance and then SSH into it. Now we can check our block storage and see how to use it.
+- If we examine the attached storage information using the _"lsblk"_ command.
+```bash
+[ec2-user@ip-172-XX-XX-XX ~]$ lsblk
+
+NAME    MAJ:MIN RM SIZE RO TYPE   MOUNTPOINT
+xvda    202:0    0   8G  0 disk 
+└─xvda1 202:1    0   8G  0 part   /
+xvdb    202:16   0   8G  0 disk
+```
+- This shows:
+  - _"xvda"_ device is _attached_ -> entirely _partitioned_ as _"xvda1"_ -> _mounted_ as the root (_"/"_) of the file system. 
+  - _"xvdb"_ device is simply attached at this point and is not accessible till we _partition_ and _mount_ it.
+
+- So let us do that next - first we can check examine the device file system of _"xvdb"_ -
+```bash
+[ec2-user@ip-172-XX-XX-XX ~]$ sudo file -s /dev/xvdb
+
+/dev/xvdb: data
+
+```
+- This means the device is empty.
+
+- Now let us format this storage device with some standard Linux file system format (_ext4_ is common) -
+```bash
+[ec2-user@ip-172-31-87-163 ~]$ sudo mkfs -t ext4 /dev/xvdb
+
+mke2fs 1.43.5 (04-Aug-2017)
+Creating filesystem with 2097152 4k blocks and 524288 inodes
+Filesystem UUID: ...
+```
+
+- If we examine the device format again, we should get -
+```bash
+[ec2-user@ip-172-XX-XX-XX ~]$ sudo file -s /dev/xvdb
+
+/dev/xvdb: Linux rev 1.0 ext4 filesystem data, UUID=... (extents) (64bit) (large files) (huge files)
+```
+
+- In order to _mount_ this to to some location we create a directory (typically inside _"/media"_ by convention, though it can be any path) - 
+```bash
+[ec2-user@ip-172-XX-XX-XX ~]$ sudo mkdir /media/volb
+```
+
+- Finally we _mount_ the _device_ to this location - 
+```bash
+[ec2-user@ip-172-XX-XX-XX ~]$ sudo mount /dev/xvdb /media/volb
+```
+
+- Now if we list the block storage again we shoudl see -
+```bash
+[ec2-user@ip-172-XX-XX-XX ~]$ lsblk
+
+NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0   8G  0 disk 
+└─xvda1 202:1    0   8G  0 part /
+xvdb    202:16   0   8G  0 disk /media/volb
+```
+
+- The device _"/dev/xvdb"_ is now mounted at the location _"/media/volb"_.
+
+- Now this additional 8GiB of storage is avialable for us to use. We can go ahead and create a few files (pump in  some data, using some scripting) here and then list them- 
+```bash
+[root@ip-172-XX-XX-XX volb] touch file1.txt
+
+[root@ip-172-XX-XX-XX volb] for i in {1..10000}; do echo $i >> file1.txt; done
+
+[root@ip-172-XX-XX-XX volb] cp file1.txt file2.txt
+
+[root@ip-172-XX-XX-XX volb] ls -l
+total 120
+-rw-r--r-- 1 root root 52793 Mar 15 16:42 file1.txt
+-rw-r--r-- 1 root root 52793 Mar 15 16:46 file2.txt
+drwx------ 2 root root 16384 Mar 15 16:11 lost+found
+```
+- This shows we now have 2 (approximately) 52Kb files in this location.
+
+\<TO DO - >
 - Rebbot mount
 - Change volumme type and size on the fly
 - Snapshots and images for backup/restore & transfer - AZ/region
+
+\< - TO DO>
