@@ -850,16 +850,21 @@ _"Security Groups"_ are essentially a _set of firewall rules_ and controls traff
 ### EBS Volumes - Lab
 In this section we shall play around a bit with EBS volumes and list out their main properties.  
 - Let us create a new instance, and attach an additional volume to it.
+
 - Select an _"Amazon Linux AMI"_ with _"t2.micro"_ instance type, and leave all other configuration details as defult.
+
 - Now we configure the _storage options_:
 
   - The instance would have a default _Root_ volume which would mostly be a _"General Purpose SSD"_, and some device name like _"dev/xvda"_.
 
-  - Let us add an additional storage volume - an _"EBS"_ volume, make it _"Magnetic Standard"_ with 8GiB size.This mighet get a device name _"dev/xvdb"_.
+  - Let us add an additional storage volume - an _"EBS"_ volume, make it _"Magnetic Standard"_ with 8GiB size.This might get a device name _"dev/xvdb"_.
+
+- An importnat thing to remember is that the _EBS Volume_ and the _EC2 instance_ that we wish to attcah it to have to be in the same _AZ_.
 
 - Next we add some name tag, and then configure the _"Security Group"_ to be able to access this instance via SSH.
 
 - Finally launch the instance and then SSH into it. Now we can check our block storage and see how to use it.
+
 - If we examine the attached storage information using the _"lsblk"_ command.
 ```bash
 [ec2-user@ip-172-XX-XX-XX ~]$ lsblk
@@ -936,9 +941,19 @@ drwx------ 2 root root 16384 Mar 15 16:11 lost+found
 ```
 - This shows we now have 2 (approximately) 52Kb files in this location.
 
-\<TO DO - >
-- Rebbot mount
-- Change volumme type and size on the fly
-- Snapshots and images for backup/restore & transfer - AZ/region
+- **Mount on Reboot** - One thing to keep in mind is that if the machine _reboots_ for whatever reason, the additional volume would _unmount_ by defualt and we would have to mount it again.  
+\<TO DO - How to configure mount on reboot>
 
-\< - TO DO>
+- **Modifying EBS Volumes** - Now it is possible to modify the EBS volume on the fly, such as change the type or increase storage capacity etc. And this can be done on the fly without downtime!
+
+- **Snapshots** - We can take snapshots of EBS volumes as point in time backups. They are created in _S3_ however they are not directly accessible in some bucket. Snapshots are incremental, i.e. only modified volumes are copied over. However all that is abstracted away by AWS.
+
+- **Copy Snapshots** - Snapshots can be copied to other regions and attched as volumes to other EC2 instances.
+
+- **Images from Snapshots** - Snapshots of _Root volumes_ can be used to create images and thes ecan be used to launch other instances which as essentially clones. The images/snapshots can be copied to other _Regions_ or _AZs_ to create the instance there.
+
+  - Note that _images_ can be created directly from the _EC2_instance and it is not necessary to take a _snapshot_ just for that purpose.
+
+- **Encrypted Snapshots** - _Snapshots_ created from _encrypted_ volum will be _encrypted_. And _volumes_ created from _encrypted_ _snapshots_ will be _encrypted_ as well.
+
+- **Sharing Snapshots** - If we wish to share our _snapshots_ with others it cannot be _encrypted_, because the _crypto - key_ is held only within your account and cannot be shared outside.
