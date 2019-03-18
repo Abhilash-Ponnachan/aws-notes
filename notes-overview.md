@@ -954,6 +954,15 @@ drwx------ 2 root root 16384 Mar 15 16:11 lost+found
 
   - Note that _images_ can be created directly from the _EC2_instance and it is not necessary to take a _snapshot_ just for that purpose.
 
+  - When we create an _image_ of an instance, it creates an _EBS snapshot_ of all the attched _volumes_.
+
+  - We can create an image without rebooting the machine (on the fly), however the integrity of the data cannot be guaranteed. Hence not   recommended in real scenarios.
+
 - **Encrypted Snapshots** - _Snapshots_ created from _encrypted_ volum will be _encrypted_. And _volumes_ created from _encrypted_ _snapshots_ will be _encrypted_ as well.
 
 - **Sharing Snapshots** - If we wish to share our _snapshots_ with others it cannot be _encrypted_, because the _crypto - key_ is held only within your account and cannot be shared outside.
+
+- A general workflow for **migrating an EC2 instance** might look like shown in the diagram below. Here we are migrating an EC2 server from _N. Virginia (US East 1)_ to _Ireland (EU West)_. The server has an attached EBS volume -  
+![ec2-migrate-region-flow](ec2-migrate-region-flow.png)
+
+
