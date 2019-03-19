@@ -966,3 +966,68 @@ drwx------ 2 root root 16384 Mar 15 16:11 lost+found
 ![ec2-migrate-region-flow](ec2-migrate-region-flow.png)
 
 
+### AMIs - EBS Root Device Volumes v/s Instance Stores
+When we launch an EC2 instance the _root device volume_ contains the image used to boot the instance. There are two _storage options_ for the _root device_ -  
+
+  - **Instance store backed** - In this case the _root device volume_ is an _Amazon instance store_ created from a template stored in _S3_. _Instance stores_ are temperory/ephemeral storage volumes ophysically attcahed to the _host computer_ on which your instance runs. This used to the only option initially available.
+
+  - **EBS backed** - With the launch of EBS, we have the option for the _root device_ to be an EBS volume. The _root EBS volume_ will be created from an _EBS snapshot_. This is the most common option available now.
+
+  - **Default data storage** -
+    - **Instance Store AMIs** - 
+      - Instances launched from _Instance store AMIs_ have an _instance store_ attched by default. The _root volume_ will contain the _root partition_ and we can have additional volumes or partitions to store our data.  
+      - We can attach EBS volumes for persistent storage if needed after the instance is launched.
+      - We cannot add _instance store_ after the machnine is launched.
+    
+    - **EBS backed AMIs** - 
+      - _EBS backed AMIs_ have an EBS volume attached automatically. It will contain the _root partition_.  
+      - We can attach additional _EBS volumes_ or _instance store_ volume if needed.
+
+  - **Data persistence** -
+    - **Instance Store AMIs** - 
+      - This is ephemeral storage and all data will be lost if -
+        - Machine terminates, or has a disk failure.
+      - _Instance store_ backed instances cannot be stopped.
+      - Data is preserved in the case of a reboot only.
+    
+    - **EBS backed AMIs** - 
+      - EBS is cosidered reliable persistent storage and data (in _root volume_) will be lost only if the machine is terminated.
+      - Additional EBS volumes will continue to exist (by default) even if the machine terminates
+
+  - **Boot time** -
+      - **Instance Store AMIs** - 
+        - This is slower to boot and takes less than 5 minutes on average.
+      
+      - **EBS backed AMIs** - 
+        - This is quicker to launch and takes less than 1 minute on average.
+
+  - **Size limit** -
+      - **Instance Store AMIs** - 16 TiB.
+      
+      - **EBS backed AMIs** - 10 GiB  
+
+  - **Configuration change** -
+      - **Instance Store AMIs** - 
+        - Instance attributes are fixed for the lifetime of an instance.
+      
+      - **EBS backed AMIs** - 
+        - Instance type, kernel, RAM, disk etc. can be changed with the machine stopped. In fact some storage characteristics can be modfied on the fly.
+
+  - **AMI creation** -
+      - **Instance Store AMIs** - 
+        - Requires _Amazon EC2 AMI tools_.
+      
+      - **EBS backed AMIs** - 
+        - Simple _command/API_, can also be done from the console.  
+
+  - **Charges** -
+      - **Instance Store AMIs** - Charged for -  
+        - _instance usage_
+        - _AMI Storage in S3_
+      
+      - **EBS backed AMIs** - Charged for - 
+        - _instance usage_
+        - _EBS volume usage_
+        - _Storing AMI as EBS snapshot_  
+      
+      _EBS backed instances_ is the common recommended type, and infact most of the _instance types_ are only available as _EBS root volumes_.
