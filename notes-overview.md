@@ -1030,4 +1030,95 @@ When we launch an EC2 instance the _root device volume_ contains the image used 
         - _EBS volume usage_
         - _Storing AMI as EBS snapshot_  
       
-      _EBS backed instances_ is the common recommended type, and infact most of the _instance types_ are only available as _EBS root volumes_.
+      _EBS backed instances_ is the common recommended type, and infact most of the _instance types_ are only available as _EBS root volumes_.  
+
+### Load Balancers - Theory
+A load balancer is an applaince (virtual or physical) that accepts incoming network traffic and distributes it across a cluster of servers. This enables the capabilty to provide performance and quality attributes such as-
+ - High Availaibilty
+ - Horizontal Scalability  
+ - Higher Throughput _(though not necessarily low-latency)_
+
+There are three types of load balancers in AWS:
+- **Classic Load Balancers**:  
+This is the original _Elastic oad Balancers (ELBs)_ that AWS offered. They can do some amount of _Layer 7_ (HTTP/HTTPS) load balancing by supporting _"X-Forwarded-For"_ and _"sticky sessions"_.  
+They can also support strict _"Layer 4"_ load balancing for TCP traffic.  
+AWS is pushing to replace the classic ELBs with the new specilaized load balancers explained below.
+
+- **Application Load Balancers**:  
+Application load balancers are intended for distributing traffic based on the _"application layer protocol"_ (HTTP, HTTPS). Therefore they are also called _"Layer 7"_ (OSI layer) load balancers. AWS application load balancers are quite advanced and can route specific requests to specific servers. They are fuly _application-aware_.
+
+- **Network Load Balancers**:
+Network load balancers can distribute traffic at the _"transport layer"_ (_Layer 4_ of OSI - TCP). They can handle millions of requests per second while maintaining ultra low altencies. Network load balancers are used when ultra high performance is required.
+
+#### Load balancer Errors
+- Gateway Timeout Error:  
+When a _Layer 7_ load balancer hits a bottleneck sending out traffic it can respnd with a _gateway timeout_ or _"504"_ error. This usually indicates that the target servers are not-responding or refusing traffic.  
+
+#### X-Forwarded-For
+The nodes sitting behind the load balancer cannot see the public IP of the client that originated the request. They recieve traffic from the load balancer. The _"X-Forwarded-For"_ header can be used to pass along the origin IP address which the receiving nodes can inspect and react as needed.
+
+### Load Balancers - Lab
+In this section we shall setup two web servers that can serve a simple web page in two AZs and then configure a load balancer to access them. Note that we are going to do a minimal configuration just to get things working and test it out.  
+- So first we launch two Amzon AMI - t2.micro images. We shall name one as _"Web-srv-1"_ and the other as _"Web-serv-2"_.
+- We add these to the _"default-VPC"_ security group to make sure that it is accessible from nodes within the VPC (like the load balancer).
+  - We can add additional security groups for controlling direct access to the instances - for SSH, HTTP, HTTPS etc.
+- Create both in two different _Availability Zones_ to test that scenario.
+- Next step is to essentially enable these instances to serve a simple web page.
+- First step is to SSH into these, and apply the kernel update-
+```bash
+$ sudo yum update
+```
+- Next install the Apache web server software (httpd) -
+```bash
+$ sudo yum install httpd
+```
+- Create a simple default web page in the standard Linux location _"/var/www/html"_
+```bash
+$ cd /var/www/html
+$ sudo nano index.html
+```
+- Edit the file with HTML to  show some message with an identification of each server - 
+```html
+<html>
+  <head>
+    <title>Web Server One</title>
+  </head>
+  <body>
+    <h1>Hello from Web Server - 1</h1>
+  </body>
+</html>
+```
+- Similarly do for _"Web Server Two"_.
+- Now if we start the web server service -
+```bash
+$ sudo service httpd start
+Starting httpd:                                            [  OK  ]
+```
+- Now if we type in the public IP of the servers into our browser window we should be able to see our web page (for each server).
+
+- **Classic Load Balancer (ELB)** -  
+Next we create a _classic load balancer (ELB)_ -
+  - Give it a name
+  - Assign it to the default VPC
+  - Specfiy the load balancer protocol - For now we shall stick with HTTP
+  - Configure the _Health Check_ - This is used by the load balancer to pulse-check the server instances - 
+    - **Ping Protocol** - leave it as HTTP
+    - **Ping Port** - leave as 80
+    - **Ping Path** - 
+      - We can leave it as _"/index.html"_
+      - A better practice is to create another light-weight file (since our actual resource can become heavy and may change over time) - make some file _"health-check.html"_ (can even be _".txt"_) - assign this as the _Ping Path_
+    - **Response Timeout** - Time to wait for response when checking heart-beat (can be 2 secs to 60 secs) - make it 2 secs
+    - **Interval** - Time interval between health-checks (can be 5 secs to 300 secs) - keep it 5 secs
+    - **Unhealthy Threshold** - Number of consecutive health-checks failures before an instance is declared un-healthy - make it 2
+    - **Healthy Threshold** - Number of consecutive successful health-checks before an instance is declared healthy - make it 3
+  - Next add our instances to the ELB, and wiat for it to be regsitred as _"InService"_ by the ELB
+  - Once our ELB is launched and ready we can access it using the DNS name. Note that we cannot get a static IP for the load balancers and we have to use the DNS name.
+    - the DNS name typically has the form - 
+      - \<elb-name>-\<some unique-number>.\<region>.elb.amazonaws.com
+    - for example - 
+      - test-web-elb-3312567445586.ust-east-1.elb.amazonaws.com
+  - Now if we navigate to our ELB DNS in the browser or _"curl"_ into it, we should be served with either one of those web server's default web page. This can keep changing depending on where the ELB redirects the request to.
+  - If any of the servers fail the health-check (we can stop one server or rename the _Ping Path_ resource etc. and experiment), it will be declared _"Out of Service"_ by the ELB and traffic will be routed only to the remaining _"In Service"_ servers. 
+
+- **Application Load Balancer (ALB)** -  
+This time we can make an _"Application Load Balancer"_ and play around with that.
