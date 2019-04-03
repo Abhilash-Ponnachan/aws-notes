@@ -1127,8 +1127,7 @@ Next we create a _classic load balancer (ELB)_ -
 - **Application Load Balancer (ALB)** -  
 This time we can make an _"Application Load Balancer"_ and play around with that.
 - First we setup two _t2.micro_ EC2 instances as web servers just like the previous, OR just use those two.
-- **Application Load Balancer (ALB)** -  
-Next we create an _Application Load Balancer_ and disitribute traffic to these two web servers:
+- Next we create an _Application Load Balancer_ and disitribute traffic to these two web servers:
   - Give it a **Name**
   - **Scheme** is _internet-facing_
   - **IP address type** can be _ipv4_ for our purposes
