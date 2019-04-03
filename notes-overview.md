@@ -1148,10 +1148,59 @@ This time we can make an _"Application Load Balancer"_ and play around with that
     - We shall keep everything to minimal values -
     ![ALB-health-check](ALB-health-checks.png)
   - **Register Targets**
-    - Now add our two EC2 instances as _Rgistered Targets_
-  - **Launch** the ALb and we should be able to go to the ALB console
+    - Now add our two EC2 instances as _Registered Targets_
+  - **Launch** the ALB and we should be able to go to the ALB console
     - Like the ELB we would get a DNS like -
       - \<ALB name\>-\<unique number\>.\<region\>.elb.amazonaws.com
       - for example - web-server-alb-18967555.us-east-1.elb.amazonaws.com
   - Again we can navigate to our ELB DNS in the browser or _"curl"_ into it and keep seeing our web pages being served from EITHER web server.
   - _Note: It seems to follow a Round-Robin algorithm._
+
+### CloudWatch
+_CloudWatch_ is an AWS service that allows us to monitor our AWS services. 
+- It monitors the basic performance attributes such as CPU, Disk, Network etc.
+- The _default_ _Cloud Watch_ monitoring works atr 5 minutes interval. If we turn on _Detailed Monitoring_ we can get it at 1 minute (but this would exceed the _Free Tier_).
+- **Dashboards**
+  - We can create a dasboard of _Widgets_ that can display metrics that we are inetersted for any of our AWS services.
+  - Types of Widgets 
+    - Text Widgets with - Markdown
+    - Line Widgets
+    - Stacked Area
+    - Number (think KPI)
+    - Query Results
+  - Types of Services - All AWS services
+    - EC2
+    - S3
+    - EBS
+    - Load Balancers
+  - _Per Instance Metrics_
+  - Types of metrics availble for EC2
+    - CPU - Credit Usage, Credit Balance, Utlization
+    - Disk - Read Bytes, Write Bytes, Read Ops, Write Ops
+    - Network - In, Out, Packets In, Packets Out
+    - StatusCheck - Instance level, Host level
+    - _Note: We do not get RAM by default, this would need to be done via Custom Metrics_
+- **Alarms**
+  - We can create _Alarms_ to notify us when some _metric_ exceeds some _threshold_ for some _specified period_.
+- **Events**
+  - Whenever an AWS resource has a _State Change_ (such as an EC2 instance enters _Running State_) it generates an _Event_ which is sent to an _Event Stream_.
+  - _Cloud Watch_ _Events_ enables us to subscribe to these _events_ and specify _rules_ and _actions_ to respond to them.
+- **Logs**
+  - _Could Watch Logs_ provides the capability to _monitor_, _aggregate_, and _view_ logs at system or application level.
+  - To do this we -
+    - Install a _Could Watch Log_ agent on our instance or application
+    - Configure the _agent_ to send information to _Cloud Watch Log_ _service_
+    - View the data sent across
+  - Examples would be:
+    - Track and log application exceptoins
+    - Receive alarms for kernel logs
+    - Log HTTP responses
+- **CloudWatch** versus **CloudTrail**
+  - _CloudWatch_ monitors performance metrics, whereas _CloudTrail_ monitors _actions_ performed on the AWS resource. Essentially it tracks the call to the AWS APIs so any cahnge made to these will be tracked by _CloudTrail_
+  - Example of _CloudTrail_ would be for
+    - Adding an EC2 instance
+    - Creating a new User or Role
+
+
+### AWS CLI and EC2
+x
