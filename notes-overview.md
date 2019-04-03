@@ -1084,17 +1084,21 @@ $ sudo nano index.html
     <title>Web Server One</title>
   </head>
   <body>
-    <h1>Hello from Web Server - 1</h1>
+    <h1 style="color:blue">Hello from Web Server - One</h1>
   </body>
 </html>
 ```
-- Similarly do for _"Web Server Two"_.
+- Similarly do for _"Web Server Two"_, with a different colour and heading text.
 - Now if we start the web server service -
 ```bash
 $ sudo service httpd start
 Starting httpd:                                            [  OK  ]
 ```
-- Now if we type in the public IP of the servers into our browser window we should be able to see our web page (for each server).
+- Now if we type in the public IP of the servers into our browser window we should be able to see our web page (for each server):
+
+![Web-server-one](web-server-1.png)
+
+![Web-server-two](web-server-2.png)
 
 - **Classic Load Balancer (ELB)** -  
 Next we create a _classic load balancer (ELB)_ -
@@ -1122,3 +1126,33 @@ Next we create a _classic load balancer (ELB)_ -
 
 - **Application Load Balancer (ALB)** -  
 This time we can make an _"Application Load Balancer"_ and play around with that.
+- First we setup two _t2.micro_ EC2 instances as web servers just like the previous, OR just use those two.
+- **Application Load Balancer (ALB)** -  
+Next we create an _Application Load Balancer_ and disitribute traffic to these two web servers:
+  - Give it a **Name**
+  - **Scheme** is _internet-facing_
+  - **IP address type** can be _ipv4_ for our purposes
+  - **Configure Listeners** - listens for requests on the protocls and ports specified
+    - Leave this as _HTTP_ and port _80_
+    - _later we shall see how to add HTTPS and get a domain name and signed certificates etc._
+  - **Configure Availability Zone** - the ALB will route traffic to the AZs specified in this list only
+    - Select the AZs in which we have our EC2 instances
+  - **Specify Security Groups**
+    - Select/add a securty group to control access to the _Application Load Balancer_
+  - **Configure Routing**
+    - Give the **Target Group** a **Name**
+    - **Target Type** - can be _instance_ or _IP_ or _lambda function_
+      - Leave it as _instance_ for our example
+    - **Protocol** leave it as _HTTP_ and default port _80_
+  - **Configure Health Checks**
+    - ALBs give us a lot of options for configuring health-checks
+    - We shall keep everything to minimal values -
+    ![ALB-health-check](ALB-health-checks.png)
+  - **Register Targets**
+    - Now add our two EC2 instances as _Rgistered Targets_
+  - **Launch** the ALb and we should be able to go to the ALB console
+    - Like the ELB we would get a DNS like -
+      - \<ALB name\>-\<unique number\>.\<region\>.elb.amazonaws.com
+      - for example - web-server-alb-18967555.us-east-1.elb.amazonaws.com
+  - Again we can navigate to our ELB DNS in the browser or _"curl"_ into it and keep seeing our web pages being served from EITHER web server.
+  - _Note: It seems to follow a Round-Robin algorithm._
