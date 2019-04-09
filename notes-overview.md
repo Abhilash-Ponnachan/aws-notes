@@ -1261,6 +1261,32 @@ _CloudWatch_ is an AWS service that allows us to monitor our AWS services.
     [ec2-user@ip-172-XX-XX-XX1 .aws]$ 
     ```
     We see that the _configuration_ and _credentials_ are stored in the hidden _.aws_ directory as _plain text_!  
-    Anyone who can get their hands on this file can get access to our IAM user credentials and use that maliciously!
+    Anyone who can get their hands on this file can get access to our IAM user credentials and use that maliciously!  
+    Also if we need to us the AWS CLI from many EC2 instances managing these become a nightmare, when we want to change the key or the user.
+    
+  - In the next section we shall see a more secure way of configuring and using the AWS CLI with _Roles_. 
 
-  - In the next section we shall see a more secure way of configuring and using the AWS CLI with _Roles_.
+### EC2 Roles and the CLI
+  To avoid saving a local copy of _user cerdentials_ with the EC2, we can assign it an _IAM Role_. 
+  - An _IAM Role_ is a set of permissions to act on some AWS resources. These permissions are granted through _Policies_.  
+
+  - We can assign an _IAM Role_ to _Users_, _Groups_ or other _AWS Services_. The console gives us multiple options for the _trusted entity_ that can assume the _Role_ -
+    - AWS Service - such as EC2, Lambda 
+    - Another AWS Account - allows entities in other accunts to perform actions in your account
+    - Web Identity - for federated identity through Open ID Connect
+    - SAML 2.0 - federated identity through SAML 2.0
+  
+  - So when we want an AWS service to perform an action through the AWS API, it can be assigned a _Role_ that enables it to do the action securly.
+
+  - Let us create a _Role_ that allows us to administer our _S3 buckets_. 
+    - In this case the _Trusted Entity_ is an _AWS Service_, an EC2 in this case.
+    
+    - Attach a permission policy - _AmazonS3FullAccess_.
+      - We can create custom policies via JSON if needed 
+
+    - Give it a name and create the _Role_.
+  
+  - Next create an EC2 instance, and attach this _Role_ with it. This used to be possible only when we were creating the instance, though now it is possible to do that on the fly even after the instance is created.
+
+  - Now if we SSH into this instance and try to use the AWS CLI commands for S3 it will work without the need for any configuration or credentials.
+
