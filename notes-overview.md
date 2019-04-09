@@ -1201,6 +1201,66 @@ _CloudWatch_ is an AWS service that allows us to monitor our AWS services.
     - Adding an EC2 instance
     - Creating a new User or Role
 
-
 ### AWS CLI and EC2
-x
+  In this section we shall install the AWS CLI and get familiar working with it. It is a powerful tool to interact with AWS and brings a level of flexibility that we do not get with the console.
+  - First we shall try this on an EC2 instance - The Amazon Linux AMIs come pre-installed with AWS CLIs so we can just use that.
+
+  - Once we launch and _Amazon Linux ALI instance_, SSH into it and do the initial updates, we are ready to type in some _aws CLI_ commands.
+
+  - So let us try to list all our _S3_ buckets -
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ aws s3 ls
+  Unable to locate credentials. You can configure credentials by running "aws configure".
+  ```
+
+  - This is becuse - for the CLI to make secure REST/HTTP requests to the AWS API we need to have an IAM user setup and the _Access Key ID_ and _Secret Access Key_ and the AWS CLI configured with those credentials!
+
+  - To do that we simply do _"aws configure"_, and it will ask us for 
+    - Access Key Id
+    - Secret Access Key
+    - Default Region
+    - Default Output Format
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ aws configure
+  AWS Access Key ID [None]: AXXXXXXXXXXXXXXXXX
+  AWS Secret Access Key [None]: abcD01efG2345xyz9876rtFD1gght8765
+  Default region name [None]: us-east-1
+  Default output format [None]: 
+  ```
+
+  - Now with this access credentials configured we are ready to work with the AWS CLI -
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ aws s3 ls
+    2018-11-17 10:50:38 my.first.bucket
+    2018-11-20 16:34:41 my.replicated.bucket
+    2019-02-29 11:54:42 my.site1
+    2019-05-02 14:54:49 my.sydney.bucket
+    2018-01-18 11:54:05 my.versioned-bucket
+  ```
+
+  - To get help on a command we can do -
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ aws s3 help | less
+  ```
+
+  - **Security Vunerability** -
+    Even though we are able to work with the AWS CLi from this instance it has a potential security flaw. If we examine the _.aws_ directory
+    ```bash
+    [ec2-user@ip-172-XX-XX-XX ~]$ ls -a
+    .  ..  .aws  .bash_logout  .bash_profile  .bashrc  .ssh
+    [ec2-user@ip-172-XX-XX-XX ~]$ cd .aws
+    [ec2-user@ip-172-XX-XX-XX .aws]$ ls
+    config  credentials
+    [ec2-user@ip-172-XX-XX-XX .aws]$ cat credentials 
+    [default]
+    aws_access_key_id = AXXXXXXXXXXXXXXXXX
+    aws_secret_access_key = abcD01efG2345xyz9876rtFD1gght8765
+    [ec2-user@ip-172-XX-XX-XX .aws]$ cat config
+    [default]
+    region = us-east-1
+    [ec2-user@ip-172-XX-XX-XX1 .aws]$ 
+    ```
+    We see that the _configuration_ and _credentials_ are stored in the hidden _.aws_ directory as _plain text_!  
+    Anyone who can get their hands on this file can get access to our IAM user credentials and use that maliciously!
+
+  - In the next section we shall see a more secure way of configuring and using the AWS CLI with _Roles_.
