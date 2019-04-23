@@ -1290,3 +1290,61 @@ _CloudWatch_ is an AWS service that allows us to monitor our AWS services.
 
   - Now if we SSH into this instance and try to use the AWS CLI commands for S3 it will work without the need for any configuration or credentials.
 
+  - **SSH Console - prettify (a little detour)**  
+  _Note: when we SSH into the EC2 instance the command prompt options we set in our bash-profile locally will not apply. If we want to make our command-prompt easier on the eyes we can configure it and set colours etc. by setting the "PS1" varaible_ - for example
+  ```bash
+  export PS1="[\[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[32m\]\h\[\e[m\] \W]\[\e[35m\]\\$\[\e[m\] "
+  ```
+
+### S3 CLI and Regions
+  Running S3 CLI commands when accessing them from different regions. It used to be the case that with previous versions of _"aws s3" SDK/API_ we had to specify a _"--region"_ option when accessing an S3 bucket from EC2 instances _across regions_. With the new version of the AWS S3 API it is no longer needed.  
+  We can simply copy files from say a my bucket in _London_ to and EC2 instance in _N. Virginia_
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ aws s3 cp --recursive s3://my.london.bucket ~
+
+  download: s3://my.london.bucket/test-file.txt to ./test-file.txt
+  ```
+
+### Bootstrap Scripts
+  When and EC2 instance is launched we have the option to pass some **user data** to it, with which we can do some startup configuration/automation tasks. This is called _bootstarpping_ and we can specify that as _shell scripts_ or _cloud-init-directives_.
+  _Bootstrapping_ gets the instance prepared and ready for providing its intended service automatically when launched. Without this we would have to explicitly prepare the instance via commands, console or APIs.  
+  In a real world scenario it EC2 instances would most likely be bootstrapped to:  
+  - become aware of itself and its role in the architecture
+  - run necessary updates, patches
+  - pull in necessary data/files from repositories
+  - install necessary softwares
+  - register itself with the rest of the system (an ELB for example)
+  - start proving its intended service
+  
+  _User data scripts_ (or _cloud-init-directives_) are executed during the _boot cycle_ when the instance is launched. _If we wish to execute it on restart then we will have to explicitly configure it that way_.
+
+  _User data shell scripts_ start with the **#!** (shebang or bang-line) indicator. This is from Unix/Linux where this first 16 cahracters inform the kernel the path to the _interpreter_ it has to use for exceuting the rest of the script. For bash scripts it is normally **#!/bin/bash**
+
+  _User data shell scripts_ are executed as **root** and therefore there is no need to prefix with **sudo**.
+
+  Also since ther are _not_ run in _interactive_ mode we cannot use commands that require user input. Generally we would use the desired option switches (such as **yum update -y**)
+
+  The _"/var/log/cloud-init-output.log"_ file captures console output, so we can use this to debug the scripts after launch if the instance didn't configure the way we inteded.
+
+  _Note:_ When a _user data script_ is processed it is copied to a _"/var/lib/cloud"_ folder. Now if we do not delete this file (it does not get deleted automatically), and make an AMI from this instance this will become part of the new instance and will get executed when launched.
+
+  #### Let us now try to bootstrap an EC2 instance as a web-server using a _bash script_ and some data stored in S3
+
+  TO DO ....
+  - create S3 bucket with index.html
+  - create IAM role with perission to read from S3
+  - create EC2 instance with the above role
+  - specify user-data script -
+      #!/bin/bash
+      yum update -y
+      yum install httpd -y
+      service httpd start
+      chkconfig httpd on
+      aws s3 cp s://<my.website.bucket/index.html>. /var/www/html/
+  - now launch the EC2 instance, and the web-server and web-page shoudl be setup automatically
+  - browse to teh public IP and we should see our web-page!
+  - we can examine the cloud-init-output.log and the /var/lib/cloud folder  
+  
+  .... TO DO
+
+  _Note:_ For more complex autoamtion scenarios it is recommended to use _AWS CloudFormation_ or _AWS OpsWorks_.
