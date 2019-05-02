@@ -1355,33 +1355,33 @@ In this section we shall install the AWS CLI and get familiar working with it. I
 
   - Now we create an _IAM Role_ with permission to read from _S3_. To do that we have to configure certain parameters -
 
-        - _Type of trusted entity_: These can be one of -
-              - AWS Services - _to grant permissions to AWS services within your account_
-              - Another AWS account - _to grant permissions to other AWS accounts_
-              - Web Identity - _for federated authentication & authorisation using OpenIdConnect or Cognito_
-              - SAML 2.0 federation - _for corporate SAML federated identity managment solutions_
-        - _The service that will use the role_:  EC2 instance
-        - _Attach permissions policies_: AmazonS3ReadOnly Access
-              - For _copying_ the files from _S3_, _read-only_ permission is sufficient
-        - Give a _Name_ to the role
+      - _Type of trusted entity_: These can be one of -
+            - AWS Services - _to grant permissions to AWS services within your account_
+            - Another AWS account - _to grant permissions to other AWS accounts_
+            - Web Identity - _for federated authentication & authorisation using OpenIdConnect or Cognito_
+            - SAML 2.0 federation - _for corporate SAML federated identity managment solutions_
+      - _The service that will use the role_:  EC2 instance
+      - _Attach permissions policies_: AmazonS3ReadOnly Access
+            - For _copying_ the files from _S3_, _read-only_ permission is sufficient
+      - Give a _Name_ to the role
 
   - Create _EC2_ instance and associate it with this _IAM role_
 
   - In the _Additional Informations_ section specify a _user-data script_ -
       
-      ```bash
-       #!/bin/bash
-       yum update -y
-       yum install httpd -y
-       service httpd start
-       chkconfig httpd on
-       aws s3 cp s://<my.website.bucket/index.html>. /var/www/html/
-      ```
+   ```bash
+      #!/bin/bash
+      yum update -y
+      yum install httpd -y
+      service httpd start
+      chkconfig httpd on
+      aws s3 cp s://<my.website.bucket/index.html>. /var/www/html/
+   ```
       
 - Now when we launch the _EC2 instance_, the _user-data script_ will be executed as _root_, and the web-server and web-page should be setup automatically
 
-  - Finally when we browse to the public IP we should see our web-page!
+- Finally when we browse to the public IP we should see our web-page!
 
-  - If we examine the `/var/log/cloud-init-output.log` we should be able to see the execution log 
+- If we examine the `/var/log/cloud-init-output.log` we should be able to see the execution log 
 
   _Note:_ For more complex autoamtion scenarios it is recommended to use _AWS CloudFormation_ or _AWS OpsWorks_.
