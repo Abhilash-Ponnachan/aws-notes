@@ -394,7 +394,7 @@ We can setup _Replication_ to synch up buckets in different regions.
    # skipping the initial imports and proxy code
 
    object_url = 'https://s3-ap-southeast-2.amazonaws.com/my-sydney-bucket/my-large-image.jpg'
-  
+    
    def access_object(url):
       rsp = requests.request("GET", url, proxies=proxies)
       return rsp
@@ -454,7 +454,7 @@ We can setup _Replication_ to synch up buckets in different regions.
    ```python
       # use the cloudfront domain name for the resource url
       object_url = 'https://d651a7rd02db4c.cloudfront.net/my-large-image.jpg
-   ```  
+   ```
    Now when we execute the script, we should get the following results -
     - The first run we would get something like - 
    ```bash
@@ -470,7 +470,7 @@ We can setup _Replication_ to synch up buckets in different regions.
    - **Reports & Analytics** - This section provides options to view and analyze the usage of our CloudFront _distributions_
 
    Finally we have to remember to _disable_ and _delete_ our distribution, as we can get charged for this.  
-     
+   
 - ***S3 Security & Encryption***  
    - **Securiy**  
       - **Access**  
@@ -530,7 +530,7 @@ All _Volume Gateway_ data written to the cloud is stored in Amazon S3 as EBS sna
 It is importnat to keep in mind that, _Volume Gateway_ services have on-premises storage hardware associated with them.  
 _Volume Gateways_ are of two types -
    - **Stored Volumes**  
-    All data written to the _Stored Volume_ is written to the on-premises storage hardware associated with that volume and then, asynchronously copied over to Amazon S3 as EBS snapshosts. They can range from 1GiB to 16TiB, and a gateway can support upto 32 volumes (for a total of 512 TiB).  With _Stored Volumes_ we keep a complete copy of the data on-premises.  
+      All data written to the _Stored Volume_ is written to the on-premises storage hardware associated with that volume and then, asynchronously copied over to Amazon S3 as EBS snapshosts. They can range from 1GiB to 16TiB, and a gateway can support upto 32 volumes (for a total of 512 TiB).  With _Stored Volumes_ we keep a complete copy of the data on-premises.  
    - **Cached Volumes**  
    In the case of _Cached Volume_ the primary storage is our cloud storage. All data is written to Amazon S3 (via a staging area - upload buffer). Only recently accessed data is cached locally for low-latency access. Compared to _Stored Voulme_ this approach minimizes the need for us to scale our on-premises storage capacity, while still maintaining local cache for recently accessed data. _Cached Volume_ can range from 1GiB to 32TiB.
 - **Tape Gateways (VTL)**  
@@ -578,7 +578,7 @@ In order for us to access the files within the bucket we would have to make it _
 		}
 	]
 }
-```  
+```
 Now we can upload our souce files (HTML, CSS, JS) and then we are good to go. If we access the resource using the url <u>http://myBucketName.s3-website-us-east1.amazonaws.com</u> it should got the site and the default page (index.html in our case) should be served to the browser.  
 Note : Even though we call it static website, the pages can be interactive with client-side code.  
 The advantage of using S3 to host content websites is that it can scale automatically and many organizations use this approach if they feel that there might be huge and variable demand.
@@ -609,7 +609,7 @@ The various billing options are:
          - For convertible RIs this can be upto 54% off. Convertible RIs give us some flexibility to change some configurations like going from a CPU optimized instance to a Memory optimized instance. The conversion has to result in instances of >= value as the existing.
 
    - **Spot** - Spot instances allows us to _bid_ a price for some capacity and use it when it is available. This can then be offloaded as well. It is similar to bidding and selling stocks, and works well in situations which affords flexibility in start and end times.  
-   Spot instances are charged by the hour, and they can get terminated if the price goes above your bid-price. If this happens then AWS will not charge for the partial hour. However if you terminate the instance in between and hour you can get charged for the whole hour.
+      Spot instances are charged by the hour, and they can get terminated if the price goes above your bid-price. If this happens then AWS will not charge for the partial hour. However if you terminate the instance in between and hour you can get charged for the whole hour.
       - Applications that have a huge amount of compute needed (like pharmaceuticals, genomics etc.) but have flexibility in the time they do it.
       - Requires very low compute prices.
 
@@ -638,8 +638,9 @@ General purpose inatnces are the common standard instance types that provide a b
    - T2, T3 - _These instance types provide a baseline level of CPU with the ability to burst to higher levels when required by the workload._
 
 > 2 - **Compute Optimized**  
-These instance types are optimized for heavy compte workloads (like data analytics) and have higher ratio of vCPUs and core with higher clock-speeds.
-   - C4, C5 - _The latest of the compute optimized category._
+> These instance types are optimized for heavy compte workloads (like data analytics) and have higher ratio of vCPUs and core with higher clock-speeds.
+>
+>    - C4, C5 - _The latest of the compute optimized category._
 
 > 3 - **Memory Optimized**  
 For use cases requiring large RAM (like in-memory data processing or analytics) this family of instance types are best.
@@ -1202,7 +1203,7 @@ _CloudWatch_ is an AWS service that allows us to monitor our AWS services.
     - Creating a new User or Role
 
 ### AWS CLI and EC2
-  In this section we shall install the AWS CLI and get familiar working with it. It is a powerful tool to interact with AWS and brings a level of flexibility that we do not get with the console.
+In this section we shall install the AWS CLI and get familiar working with it. It is a powerful tool to interact with AWS and brings a level of flexibility that we do not get with the console.
   - First we shall try this on an EC2 instance - The Amazon Linux AMIs come pre-installed with AWS CLIs so we can just use that.
 
   - Once we launch and _Amazon Linux ALI instance_, SSH into it and do the initial updates, we are ready to type in some _aws CLI_ commands.
@@ -1291,7 +1292,7 @@ _CloudWatch_ is an AWS service that allows us to monitor our AWS services.
   - Now if we SSH into this instance and try to use the AWS CLI commands for S3 it will work without the need for any configuration or credentials.
 
   - **SSH Console - prettify (a little detour)**  
-  _Note: when we SSH into the EC2 instance the command prompt options we set in our bash-profile locally will not apply. If we want to make our command-prompt easier on the eyes we can configure it and set colours etc. by setting the "PS1" varaible_ - for example
+    _Note: when we SSH into the EC2 instance the command prompt options we set in our bash-profile locally will not apply. If we want to make our command-prompt easier on the eyes we can configure it and set colours etc. by setting the "PS1" varaible_ - for example
   ```bash
   export PS1="[\[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[32m\]\h\[\e[m\] \W]\[\e[35m\]\\$\[\e[m\] "
   ```
@@ -1315,7 +1316,7 @@ _CloudWatch_ is an AWS service that allows us to monitor our AWS services.
   - install necessary softwares
   - register itself with the rest of the system (an ELB for example)
   - start proving its intended service
-  
+
   _User data scripts_ (or _cloud-init-directives_) are executed during the _boot cycle_ when the instance is launched. _If we wish to execute it on restart then we will have to explicitly configure it that way_.
 
   _User data shell scripts_ start with the **#!** (shebang or bang-line) indicator. This is from Unix/Linux where this first 16 cahracters inform the kernel the path to the _interpreter_ it has to use for exceuting the rest of the script. For bash scripts it is normally **#!/bin/bash**
@@ -1330,21 +1331,57 @@ _CloudWatch_ is an AWS service that allows us to monitor our AWS services.
 
   #### Let us now try to bootstrap an EC2 instance as a web-server using a _bash script_ and some data stored in S3
 
-  TO DO ....
-  - create S3 bucket with index.html
-  - create IAM role with perission to read from S3
-  - create EC2 instance with the above role
-  - specify user-data script -
-      #!/bin/bash
-      yum update -y
-      yum install httpd -y
-      service httpd start
-      chkconfig httpd on
-      aws s3 cp s://<my.website.bucket/index.html>. /var/www/html/
-  - now launch the EC2 instance, and the web-server and web-page shoudl be setup automatically
-  - browse to teh public IP and we should see our web-page!
-  - we can examine the cloud-init-output.log and the /var/lib/cloud folder  
-  
-  .... TO DO
+  - First we create _S3 bucket_, that will hold the website content/pages for our website
+
+        - _Note_: Just to test things out we shall create our _S3 bucket_ in a different region (eu-west-2 : London) from where our our _EC2 instance_ (us-east-1 : N. Virginia) would be
+
+  - Next we create a simple `index.html` file and upload it to out _S3 bucket_ - 
+
+      ```html
+      html>
+          <head>
+              <title>Bootstrapped</title>
+          </head>
+          <style type="text/css">
+              #heading { color: green; font-size: 200%; text-align: center }
+          </style>
+          <body>
+              <h1 id="heading">This is a default page</h1>
+          </body>
+      </html>
+      ```
+
+      It just says "_This is a default page_" with some formatting!
+
+  - Now we create an _IAM Role_ with permission to read from _S3_. To do that we have to configure certain parameters -
+
+        - _Type of trusted entity_: These can be one of -
+              - AWS Services - _to grant permissions to AWS services within your account_
+              - Another AWS account - _to grant permissions to other AWS accounts_
+              - Web Identity - _for federated authentication & authorisation using OpenIdConnect or Cognito_
+              - SAML 2.0 federation - _for corporate SAML federated identity managment solutions_
+        - _The service that will use the role_:  EC2 instance
+        - _Attach permissions policies_: AmazonS3ReadOnly Access
+              - For _copying_ the files from _S3_, _read-only_ permission is sufficient
+        - Give a _Name_ to the role
+
+  - Create _EC2_ instance and associate it with this _IAM role_
+
+  - In the _Additional Informations_ section specify a _user-data script_ -
+      
+      ```bash
+       #!/bin/bash
+       yum update -y
+       yum install httpd -y
+       service httpd start
+       chkconfig httpd on
+       aws s3 cp s://<my.website.bucket/index.html>. /var/www/html/
+      ```
+      
+- Now when we launch the _EC2 instance_, the _user-data script_ will be executed as _root_, and the web-server and web-page should be setup automatically
+
+  - Finally when we browse to the public IP we should see our web-page!
+
+  - If we examine the `/var/log/cloud-init-output.log` we should be able to see the execution log 
 
   _Note:_ For more complex autoamtion scenarios it is recommended to use _AWS CloudFormation_ or _AWS OpsWorks_.
