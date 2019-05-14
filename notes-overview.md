@@ -1465,9 +1465,38 @@ In this section we shall install the AWS CLI and get familiar working with it. I
 
 - Getting to access the _instance-data_ is a very useful when we want to take actions using this metadata. This can be combined with _user-data_ scripts to fetch the metadata and use this to register the instance with some other service (a load balance for instance)automatically on launch
 
-### Launch Configurations
+### EC2 Auto Scaling
+_EC2 Auto Scaling_ is an AWS service that helps us maintain and scale our compute accordinng to the demand. It can ensure that the correct number of EC2 instances are avalable to handle the application load.  
+The main components of _Auto Scaling_ are:
 
-### Autoscaling Groups
+- **Auto Scaling Group** - A collection of EC2 instances can be grouped into a logical named unit for the purpose of scaling and management. 
+   - We can specify the _minimum_, _maximum_ and _desired_ number of instances for the group and AWS will automatically ensure that the number of instances are limited withn the allowable range, while trying to maintain the _desired_ number.
+
+- **Configuration Template** - This is a template that the AWS can use when it needs to automatically provision new instances. It specifies the parameters such as AMI, instance-type, security-groups etc. This can be `Launch Configuration` or `Launch Template`.
+
+- **Scaling Options** - We can specify polocies on when and how the group should scale. It can be dynamic scaling based on some conditions such as (_> 90% of CPU usage for 2 minutes_) or it may be scheduled for deterministic load.
+
+An _auto scaling group_ starts with the _desired_ numbre of instances, and continues to maintain that number by doing periodic _health checks_ (similar to load-balancers). When it detects and unhealthy instance that is terminated and launches another instance (using the _configuration template_) to replace that one.
+
+_Scaling policies_ can be applied to the group which enbales it to scale instances. It increases or decreases the _desired_ number within the _minimum_ and _maximum_ values. This can be _dynamic_ based on some demand conditio or it may be _scheduled_.
+
+There is no additional fees for _Auto Scaling_, the billing would apply to the instances and associated resources/services only.
+
+### Launch Configurations
+A _Launch Configuration_ is a template for EC2 instance configuration that is used by _Auto Scaling Group_ to launch new instances. In it we can specify the instance characteristics such as _AMI_, _instance type_, _block device mapping_, _key pair_, _security groups_ etc. Essentially the things we would specify when we launch and EC2 instance.  
+- We can specify the same _launch configuration_ for multiple _auto scaling groups_
+- However an _auto scaling group_ can have only one _launch configuration_
+- A _launch configuration_ cannot be modified once created. To change the instance launch details for _auto scaling_ we would have to create a new _launch configuration_ and point the group to that.
+
+When we create an _auto scaling group_ we have to specify a _Launch Configuration_, OR a _Launch Template_ or an _EC2_. If we specify an _EC2_ instance AWS automaticaly creates a _Launch Configuration_ behind the scene and associates that with the group.
+
+### Launch Template
+A _Launch Template_ is a template for EC2 instance configuration just like _Launch Configuration_. However _Launch Template_ supports _versioning_. So we can have multiple versions of a template each with some subset of parameters having different values. This makes managing a heirarchy of templates easier.  
+We can create a _launch template_ from other _templates_ or copy the parameters from _launch configuration_.  
+
+AWS seems to be recommending _Launch Templates_ as the new way to manage instance configuration information for launch.
+
+
 
 
 
