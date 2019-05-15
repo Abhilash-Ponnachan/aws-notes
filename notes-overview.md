@@ -1539,6 +1539,11 @@ We shoudl be able to access the web-page via the _load balancer DNS name_.
 
 - Finally, if we delete the _auto scaling group_ all the associated instances would be terminated as well.
 
+### Placement Groups
+When we launch an EC2 instance the _EC2 service_ atempts to place our instance in such a way as to spread the instances across the hardware to minimize the impact of _corelated failures_. In general having all our instances on a single rack is probably not a good idea.  
+
+However AWS provides us a means to influence the placement of our instances using _placement groups_
+
 
 
 
