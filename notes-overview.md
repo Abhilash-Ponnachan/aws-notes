@@ -1496,6 +1496,48 @@ We can create a _launch template_ from other _templates_ or copy the parameters 
 
 AWS seems to be recommending _Launch Templates_ as the new way to manage instance configuration information for launch.
 
+### Auto Scaling - Lab
+-----------------------
+To get a hands-on experience of how an _auto sclaing group_ would work, we can configure one for a cluster of web-servers. The steps involved woudl be as follows:  
+- **Prepare Web-Server content**
+   - Create a simple _index.html_ file with some static message (like we did previously)
+   - Create a simple text file for use as health check, call it say _health-check.html_
+   - Upload both to some _S3_ bucket
+- **Create & Configure a Load-Balancer**
+   - Create a load-balancer to route traffic to our web-servers
+   - We can use a _Classic ELB_ for this lab
+   - Point the health-check path to the file we specified above (`/health-check.html`)
+   - Make sure the _load balancer_ has _Security Groups_ that will allow it to connect to the instances as well as be accessible from the internet -
+      - default VPC security group
+      - some security group that allows it to be reached via _HTTP_
+   - Specify the _healthy_, _unhealthy_ thresholds
+   - Do not specify an instances as our instances woudl be provisioned by the _auto scaling group_
+- **Create a Launch Configuration**
+   - Choose AMI, instance-type (_t2.micro_) in our case
+   - Give it an _IAM Role_ that can read from _S3_. This is need for it to fetch the web-pages we created and uploaded to _S3_ above
+   - Specify _User Data_ script to install _Apche Web Server_ software and copy over the web pages from _S3_
+   ```bash
+   #!/bin/bash
+   yum update -y
+   yum install httpd -y
+   aws s3 cp s3://<my.s3.bucket>/ /var/www/html/ --recursive --exclude "*" --include "*.html"
+   service httpd start
+   chkconfig httpd on
+   ```
+   - Make sure this _launch configuration_ has the `default security group` so that the _load balancer_ can reach the instances launched with this
+- **Create Auto Scaling Group**
+   - Create an _auto scaling group_ specifying the _launch configuration_ we created above
+   - Specify the _desired_, _minimum_, and _maximum_ instance counts (for example : 3, 2, and 5)
+   - Let us give multiple _AZs_ so that the _auto scaling group_ will try to evenly distribute the instances provisioned across them (say: us-east-1a, us-east-1b, us-east-1c)
+   - Specify the _ELB_ we configured above as the _load balancer_, and the health-check type as the _ELB_ health-check
+   -Leave evenything else as defult. We do not need to specify any _scaling policies_ or _lifecyce hoosk_ fro this lab
+
+- Once the _auto scaling group_ is created and active, it will try to provision and launch 3 _EC2_ instances that would work as web-servers.  
+We shoudl be able to access the web-page via the _load balancer DNS name_.
+
+- If we terminate any/all of the instances within the _auto scaling group_ it will try to automatically provision new ones to replace the terminated ones so as to maintain the _desired_ number of instances.
+
+- Finally, if we delete the _auto scaling group_ all the associated instances would be terminated as well.
 
 
 
