@@ -1542,8 +1542,48 @@ We shoudl be able to access the web-page via the _load balancer DNS name_.
 ### Placement Groups
 When we launch an EC2 instance the _EC2 service_ atempts to place our instance in such a way as to spread the instances across the hardware to minimize the impact of _corelated failures_. In general having all our instances on a single rack is probably not a good idea.  
 
-However AWS provides us a means to influence the placement of our instances using _placement groups_
+However AWS provides us a means to influence the placement of our instances using _placement groups_. This is a logical grouping of _interdependent_ instances that are _placed_ (located) on hardware based on the type that we specify.   
+
+Depending on the type of our _workload_ we can choose one of the following types of _placement groups_:
+
+- **Cluster** - A  grouping of instances within a single _AZ_ which are placed in such a way as to enable _low-latency_ / _high-throughput_ network communication (10 Gbps).  
+
+  - Not all instance types can be placed in a _Cluster_ placement group. For best performance we have to choose on the _Enhanced Networking_ instance types.  
+
+  - It is recommended that we launch all the instances we want in a _Cluster_ placement group in one go.  
+
+  - Also it is better to have homogeneous instance-types in a group. 
+  - If we add instances to a _Cluster_ placement group later, or if we have different instance-types we cloud get a _capacity error_ while launching.
+
+  
+
+- **Partition** - When we wish to minimise the impact of _correlated_ hardware failures we should use the _Partition_ placement group. With this AWS divides the group into logical segments called _partitions_ and ensures that each _partition_ is placed in a separate _rack_ with its own network and power source.  
+
+  - _Partition_ placement groups are best suited for distributed and replicated workloads, such as `HDF`, `HBase`,` Cassandra`.
+  - When we launch instances into a _Partition_ placement group AWS tried to distribute them evenly across the _partitions_
+  - A _Partition placement group_ can have partitions in multiple _AZs_ (within the same _Region_), with a maximum of 7 partitions with in an AZ.
+
+- **Spread** - At the other end of the spectrum is the _Spread_ placement group that places instances in separate racks. This reduces the chances of any _correlated_ hardware failure affecting all the instances.  
+
+  Sometimes compliance or regulatory needs dictate that instances have to sit on separate hardware.  
+
+  -  This can be spread across multiple _AZs_ in a region.
+
+- It is important to note that the **name** of a _placement group_ has to be **unique** within your AWS account.
+- Instances with a _host_ tenancy-type obviously cannot be in placement-groups.
 
 
 
+### Elastic File System (EFS)
+
+It is a network file storage service  for _EC2_ instances that provides _block storage_ type for _Linux based_ systems.
+
+With _EFS_ storage capacity is dynamic, expanding and shrinking automatically as we add/remove files. This is in contrast to what we do when we have to 'pre-provision' _EBS_ volumes of some capacity.
+
+- _EFS_ uses the `NFSv4` protocol. 
+- No 'pre-provisioning' required, it is elastic and we pay only for what we use .
+- It can scale up to _peta bytes_
+- It can support thousands of concurrent NFS connections.
+- Data is replicated across multiple _AZs_ within a region
+- It supports _Read after Write_ consistency
 
