@@ -1674,3 +1674,4 @@ To get a feel of how it works, we can create a simple _EFS_ storage and mount it
   ### AWS Lambda
 
   \<to do>
+
