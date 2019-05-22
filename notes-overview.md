@@ -1580,10 +1580,97 @@ It is a network file storage service  for _EC2_ instances that provides _block s
 
 With _EFS_ storage capacity is dynamic, expanding and shrinking automatically as we add/remove files. This is in contrast to what we do when we have to 'pre-provision' _EBS_ volumes of some capacity.
 
-- _EFS_ uses the `NFSv4` protocol. 
-- No 'pre-provisioning' required, it is elastic and we pay only for what we use .
-- It can scale up to _peta bytes_
+- It is intended for _Linux based workloads_.
+- It is a fully managed service, we do not need to concern ourselves with provisioning, maintaining, scaling etc.
+- Applications can access it using standard file system interface. _EFS_ uses the `NFSv4` protocol. 
+- We can interact with it via the _AWS management console_, _API_ or the _AWS CLI_.
+- Unlike _EBS_, this requires no 'pre-provisioning', it is elastic and we pay only for what we use .
+- It can scale up to _peta bytes_. It can support perfeormance over 10 GBps, and over 500,000 IOPS
 - It can support thousands of concurrent NFS connections.
-- Data is replicated across multiple _AZs_ within a region
-- It supports _Read after Write_ consistency
+- It is a _region based service_ (unlike _S3_), and data is replicated across multiple _AZs_ within a region.
+- It supports _Read after Write_ consistency.
+- There is a **Standard** and an **Infrequent Access** storage class available.
+- Using _Life Cycle Management_ file not accessed for 30 days will automatically be moved to a cost-optimised _Infrequent Access_ storage, thus significantly reducing storage costs.
+- Access to the files in _EFS_ can be controlled though _Amazon VPC_, _AWS IAM_, or even _POSIX_.
 
+##### EFS - Lab
+
+To get a feel of how it works, we can create a simple _EFS_ storage and mount it to two _EC2_ instances and see how to store, access and update files. 
+
+- We shall use the _AWS Console_ to create an _EFS_ storage.
+
+- First select the _VPC_ and then the _AZs_ where we wish to have _mount-targets_ (these are where the _EC2_ instances that need to mount the _EFS_ would be located). 
+
+  - We shall leave it as _default VPC_ and all the _AZs_ within our region.
+
+- Leave the _IP Addresses_ as `Automatic` and the _Security Group_ as the `Default security group`.
+
+- Next we give it a _Name_ and we can specify a few options -
+
+  - If we wish to enable _Life cycle management_
+  - _Throughput mode_ - which can be _Bursting_ (default) or _Provisioned_
+  - _Performance mode_ - _General_ or _Max I/O_
+  - _Encryption_ - We enable _encryption at rest_ here,and configure _encryption in transit_ when we mount
+
+- We can leave everything as default and go ahead and create the _EFS_.
+
+- Now we should have an _EFS_ storage with a _DNS_ such as -
+
+  - `fs-96ab17e.efs.us-east-1.amazonaws.com`
+
+- At this point our _EFS_ file system is ready. We can now go ahead and mount it on our instances.
+
+- To try that we create two _EC2_ instances, making sure that they are added to the `default security group` (so that they can connect to the _EFS_ file system we created).
+
+- To test things out we create the two instances in two different _AZs_.
+
+- So first we _SSH_ into our instance, then create a _mount point_.
+
+- Typically we make a directory within `/mnt` or `/media`.
+
+- But first we need to give the default user (`ec2-user`) permission on that director (recursively), so we do something like -
+
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ sudo chmod -R u=rwx,g=rwx,o=rwx /media
+  
+  OR
+  
+  [ec2-user@ip-172-XX-XX-XX ~]$ sudo chmod -R 777 /media
+  ```
+
+- Now we can create a directory within `/media` - 
+
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ cd /media && mkdir efs
+  ```
+
+- Next we mount our _EFS_ file system to this directory -
+
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-834ae160.efs.us-east-1.amazonaws.com:/ /media/efs
+  ```
+
+- Note how we specified the _DNS_ of the _EFS_ file system and the mount point we created within `/media`.
+
+- The various commands to mount the EFS (either through the _EFS mount helper_ or the _NFS client_) are provided in the _EFS_ page itself so we do not have to go searching for it anywhere else!
+
+- Also if we do a `df` (or equivalent) command we can see our _EFS_ file system mounted as a volume -
+
+  ```bash
+  [ec2-user@ip-172-XX-XX-XX ~]$ df
+  ....
+  fs-834ae160.efs.us-east-1.amazonaws.com:/ 9007199254739968       0 9007199254739968   0% /media/efs
+  
+  ```
+
+- Next we can create a file here sitting in our first _EC2_ machine and then if we go to our second machine and do an `ls` we should be able to see the file!
+
+- If we edit the file from one instance (and save it) then we can immediately see it reflected from the other machine! The normal concurrent write conflict/overwrite challenges apply here.
+
+- So we see that _EFS_ provides an _elastic_, _scalable_, _fully managed_, _shareable_ file system that can be mounted on any Linux instance and accessed as though standard file-system access commands. We do not require an _API_ or _AWS CLI_ to access it from an instance (like we do for _S3_).
+
+  
+
+  ### AWS Lambda
+
+  \<to do>
