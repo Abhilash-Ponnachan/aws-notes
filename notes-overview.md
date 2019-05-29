@@ -1673,5 +1673,5 @@ To get a feel of how it works, we can create a simple _EFS_ storage and mount it
 
   ### AWS Lambda
 
-  \<to do>
+  Amazon introduced _AWS Lambda_ as a _serverless_ compute  service in 2015 at re-invent. We upload our code and create an _AWS Lambda Function_ that can then execute in response to some trigger which can be an HTTP request or be scheduled or an _AWS service_ life-cycle event (like a file being uploaded to _S3_). _AWS Lambda_ abstracts away the provisioning and management of the infrastructure under the hood. It scales automatically based on the demand. Also we pay only for the _number of requests_ and the _duration_ the function executes (also depends on _memory_ allocated). 
 
