@@ -1673,5 +1673,38 @@ To get a feel of how it works, we can create a simple _EFS_ storage and mount it
 
   ### AWS Lambda
 
-  Amazon introduced _AWS Lambda_ as a _serverless_ compute  service in 2015 at re-invent. We upload our code and create an _AWS Lambda Function_ that can then execute in response to some trigger which can be an HTTP request or be scheduled or an _AWS service_ life-cycle event (like a file being uploaded to _S3_). _AWS Lambda_ abstracts away the provisioning and management of the infrastructure under the hood. It scales automatically based on the demand. Also we pay only for the _number of requests_ and the _duration_ the function executes (also depends on _memory_ allocated). 
-
+  Amazon introduced _AWS Lambda_ as a _serverless_ compute  service in 2015 at re-invent. 
+  
+  The idea behind _AWS Lambda_ is to abstract away all concerns of the infrastructure and allow developers to focus entirely on their code. _AWS Lambda_ handles the _provisioning_, _managing_, and _scaling_ of the infrastructure under the hood.
+  
+  Developers can create an _AWS Lambda Function_ by uploading their **code**, specifying some **configuration** information such as the _trigger_ (that invokes the function), _language run-time_ (such as Java, Python, C#, Go), _allocated memory_ and _role_.
+  
+  This _code_ + _configuration_ which we call our _AWS Lambda Function_ can now execute in response to some trigger which can be an _HTTP_ request, or an _AWS service_ life-cycle event (like a file being uploaded to _S3_), or a _scheduled_ event.
+  
+  _AWS Lambda_ scales automatically depending on the demand and we need not concern ourselves with provisioning or reserving capacity for this.
+  
+  With _AWS lambda_ we are not charged for creating the function. We pay only for the __execution_ of the function. This is determined by the _number of times it is invoked_, the _duration of each execution_, and _the memory allocated_), and the first one million invocations are free.
+  
+  ##### Structure of AWS Lambda Function
+  
+  Now let take a closer look at what an _AWS Lambda Function_ consists of when -
+  
+  - It is created and sitting there to be invoked (in its passive state)
+  
+  - It is triggered and it executes (in its active/live state)
+  
+    
+  
+    **Passive State**
+  
+    When we create our _AWS Lambda Function_ the code effectively sits in an private _Amazonn S3 bucket_. We cannot directly access this. though we have the option to download our code if we need to via the console (or API).
+  
+    
+  
+    **Execution State**
+  
+    
+  
+    
+  
+  ##### Life-cycle of AWS Lambda Function
