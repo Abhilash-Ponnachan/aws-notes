@@ -1687,24 +1687,23 @@ To get a feel of how it works, we can create a simple _EFS_ storage and mount it
   
   ##### Structure of AWS Lambda Function
   
-  Now let take a closer look at what an _AWS Lambda Function_ consists of when -
+  Now let take a closer look at what an _AWS Lambda Function_ consists of when:
   
-  - It is created and sitting there to be invoked (in its passive state)
+  - _It is created and sitting there to be invoked (in its passive state)_
   
-  - It is triggered and it executes (in its active/live state)
+      When we create our _AWS Lambda Function_ the code effectively sits in an private _Amazonn S3 bucket_. We cannot directly access this. though we have the option to download our code if we need to via the console (or API).
   
+  - _It is triggered and it executes (in its active/live state)_
     
+      When an associated event triggers the _Function_ a container is launched, the code is downloaded, the language runtime is bootstrapped and the code is executed with an execution context. The container is generally kept around for a bit in case to re-use for another execution or is recycled if that time is lapsed.  
+      
+      The anatomy of an _AWS Lambda Function_ can be represented as -
+      
+      ![Anatomy of an AWS Lambda Function](aws-lambda-structure.png)
+      
+      
+      
+      In reality the life-cycle that an _AWS Lambda Function_ goes through is quite involved and we shall take a quick look at that below - 
   
-    **Passive State**
-  
-    When we create our _AWS Lambda Function_ the code effectively sits in an private _Amazonn S3 bucket_. We cannot directly access this. though we have the option to download our code if we need to via the console (or API).
-  
-    
-  
-    **Execution State**
-  
-    
-  
-    
   
   ##### Life-cycle of AWS Lambda Function
