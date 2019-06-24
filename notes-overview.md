@@ -1671,7 +1671,7 @@ To get a feel of how it works, we can create a simple _EFS_ storage and mount it
 
   
 
-  ### AWS Lambda
+### AWS Lambda
 
   Amazon introduced _AWS Lambda_ as a _serverless_ compute  service in 2015 at re-invent. 
   
@@ -1685,7 +1685,7 @@ To get a feel of how it works, we can create a simple _EFS_ storage and mount it
   
   With _AWS lambda_ we are not charged for creating the function. We pay only for the __execution_ of the function. This is determined by the _number of times it is invoked_, the _duration of each execution_, and _the memory allocated_), and the first one million invocations are free.
   
-  ##### Structure of AWS Lambda Function
+##### Structure of AWS Lambda Function
   
   Now let take a closer look at what an _AWS Lambda Function_ consists of when:
   
@@ -1700,10 +1700,47 @@ To get a feel of how it works, we can create a simple _EFS_ storage and mount it
       The anatomy of an _AWS Lambda Function_ can be represented as -
       
       ![Anatomy of an AWS Lambda Function](aws-lambda-structure.png)
-      
-      
-      
+        
       In reality the life-cycle that an _AWS Lambda Function_ goes through is quite involved and we shall take a quick look at that below - 
   
-  
-  ##### Life-cycle of AWS Lambda Function
+##### Life-cycle of AWS Lambda Function
+  When an _AWS Lambda Function_ is invoked it sets in motion a sequence of steps to execute the code, this flow depends on the _State_ at that point in time - _such as if it is being invoked for the first time, or near immediately after a previous one, or infrequently with some delay between calls_.  
+
+  The overall sequnce might look like -
+  > Full Cold Start - _Invoked first time_
+  - Select an appropriate _compute resource_ from a pool and align that with your account
+  - Download your code onto it
+  - Start and _execution environment_/_container_
+  > Partial Cold Start - _Compute resources with execution environment is available_
+  - Bootstrap the _language runtime_ (Node.js, JVM etc.)
+  > Warm Start - _Reuse resource before recycling_
+  - Execute your code, with the context passed to the _handler_ in the code
+  > Cleanup
+  - Wait around a bit for subsequent reuse
+      - 5 mins for non-VPC functions
+      - 15 mins for VPC functions, since cold start for VPC function is much higher in order to provision ENI (_Elastic Network Interface_)
+  - If another invocation, then reuse resource for warm execution
+  - Else cleanup and recycle back to pool
+![aws-lambda-lifecycle](aws-lambda-lifecycle.png)  
+   
+We can observe this in action using _AWS X-Ray_ (a profiling and tracing service).
+
+##### Optimization
+
+##### Execution Models for - AWS Lambda
+  xx - 
+  Synchrnous
+  Asynchrnous
+  Stream-based
+
+##### Tuning Resource Capacity
+  xx -  Only one knob - Memory..
+
+##### Fine-grained Security
+  xx
+
+##### AWS Lambda - Pricing
+  xx
+  _Never pay for idle_!
+
+##### AWS Step Functions
