@@ -1726,6 +1726,8 @@ To get a feel of how it works, we can create a simple _EFS_ storage and mount it
 We can observe this in action using _AWS X-Ray_ (a profiling and tracing service).
 
 ##### Optimization
+Since this process is entirely managed by the platform there are only a couple of points we can influence it for optimization - 
+
 
 ##### Execution Models for - AWS Lambda
   xx - 
